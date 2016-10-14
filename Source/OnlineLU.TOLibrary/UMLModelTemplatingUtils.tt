@@ -1,0 +1,1718 @@
+﻿<# /* Common material for inclusion in my model templates */ #>
+<# /* hostspecific allows access to the Visual Studio API */ #>
+<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Xml" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ assembly name="Microsoft.VisualStudio.Uml.Interfaces.dll"#>
+<#@ assembly name="Microsoft.VisualStudio.ArchitectureTools.Extensibility.dll"#>
+<#@ assembly name="EnvDTE" #>
+<#@ assembly name="Microsoft.VisualStudio.OLE.Interop" #>
+<#@ assembly name="Microsoft.VisualStudio.Shell" #>
+<#@ assembly name="Microsoft.VisualStudio.Shell.Interop" #>
+<#@ assembly name="Microsoft.VisualStudio.Shell.Interop.8.0" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.VisualStudio.Uml.Classes" #>
+<#@ import namespace="Microsoft.VisualStudio.Uml.CommonBehaviors" #>
+<#@ import namespace="Microsoft.VisualStudio.ArchitectureTools.Extensibility" #>
+<#@ import namespace="Microsoft.VisualStudio.ArchitectureTools.Extensibility.Uml" #>
+<#@ import namespace="Microsoft.VisualStudio.Shell" #>
+<#@ import namespace="Microsoft.VisualStudio.Shell.Interop" #><#+  // Note this is a Class Feature Block
+
+private string m_CSharpProfileName = "CSharpProfile";
+private string m_CSharpEagleRayProfileName = "CSharpEagleRayProfile";
+
+private string usr_DefaultCollectionTypeFormat = "IList<{0}>";
+
+private Dictionary<string, string> usr_TypeInicializationsReplace = new Dictionary<string, string>();
+
+private List<string> usr_PropertySetAditionalContentLines = new List<string>();
+
+private List<string> usr_AditionalUsingsImplementableClassFile = new List<string>();
+
+private List<string> usr_DataContractAditionalAttributeParams = new List<string>();
+
+private List<string> usr_DataMemberAditionalAttributeParams = new List<string>();
+
+///<summary>
+/// Text templates are run in a common AppDomain, so 
+/// we can cache the model store that we find.
+///</summary>
+private IModelStore StoreCache
+{
+  get { return AppDomain.CurrentDomain.GetData("ModelStore") as IModelStore; }
+  set { AppDomain.CurrentDomain.SetData("ModelStore", value); } 
+}
+
+private bool CacheIsOld()
+{
+    DateTime? dt = AppDomain.CurrentDomain
+           .GetData("latestAccessTime") as DateTime?;
+    DateTime t = dt.HasValue ? dt.Value : new DateTime(); 
+    DateTime now = DateTime.Now;
+    AppDomain.CurrentDomain.SetData("latestAccessTime", now);
+    return now.Subtract(t).Seconds > 3;
+}
+
+///<summary>
+/// Find the UML modeling project in this solution,
+/// and load the model.
+///</summary>
+private IModelStore ModelStore
+{
+  get 
+  {
+    // Avoid loading the model for every template:
+    if (StoreCache == null || CacheIsOld())
+    {
+      // Use Visual Studio API to find modeling project:
+      EnvDTE.DTE dte = (EnvDTE.DTE) ((IServiceProvider) this.Host)
+                       .GetService(typeof(EnvDTE.DTE));
+ 
+      EnvDTE.Project project = null;
+
+      foreach (EnvDTE.Project p in dte.Solution.Projects)
+      {
+        if (p.FullName.EndsWith(".modelproj"))
+        {
+          project = p;
+          break;
+        }            
+      }
+      if (project == null) return null;
+
+      // Load UML model into this AppDomain
+      // and access model store:
+      IModelingProjectReader reader = 
+           ModelingProject.LoadReadOnly(project.FullName);
+      StoreCache = reader.Store;
+    }
+    return StoreCache;
+  }
+}
+
+private void SaveT4ChildOutput(string outputFileName, string _strContent)
+{
+    string templateDirectory = Path.GetDirectoryName(Host.TemplateFile);
+    string outputFilePath = Path.Combine(templateDirectory, outputFileName);
+
+    File.WriteAllText(outputFilePath, _strContent);
+
+    EnvDTE.ProjectItem templateProjectItem = this.GetT4TargetProjectItem();
+    templateProjectItem.ProjectItems.AddFromFile(outputFilePath);
+}
+
+private EnvDTE.Project GetT4TargetProject()
+{
+    IServiceProvider hostServiceProvider = (IServiceProvider)Host;
+    if (hostServiceProvider == null)
+        throw new Exception("Host property returned unexpected value (null)");
+
+    EnvDTE.DTE dte = (EnvDTE.DTE)hostServiceProvider.GetService(typeof(EnvDTE.DTE));
+    if (dte == null)
+        throw new Exception("Unable to retrieve EnvDTE.DTE");
+
+    Array activeSolutionProjects = (Array)dte.ActiveSolutionProjects;
+    if (activeSolutionProjects == null)
+        throw new Exception("DTE.ActiveSolutionProjects returned null");
+
+    EnvDTE.Project dteProject = (EnvDTE.Project)activeSolutionProjects.GetValue(0);
+    if (dteProject == null)
+        throw new Exception("DTE.ActiveSolutionProjects[0] returned null");
+
+    return dteProject;
+}
+
+private EnvDTE.ProjectItem GetT4TargetProjectItem()
+{
+    EnvDTE.Project dteProject = GetT4TargetProject();
+
+    IVsProject vsProject = __dteProjectToVsProject(dteProject);
+
+    int iFound = 0;
+    uint itemId = 0;
+    VSDOCUMENTPRIORITY[] pdwPriority = new VSDOCUMENTPRIORITY[1];
+    int result = vsProject.IsDocumentInProject(Host.TemplateFile, out iFound, pdwPriority, out itemId);
+    if (result != VSConstants.S_OK)
+        throw new Exception("Unexpected error calling IVsProject.IsDocumentInProject");
+    if (iFound == 0)
+        throw new Exception("Cannot retrieve ProjectItem for template file");
+    if (itemId == 0)
+        throw new Exception("Cannot retrieve ProjectItem for template file");
+
+    Microsoft.VisualStudio.OLE.Interop.IServiceProvider itemContext = null;
+    result = vsProject.GetItemContext(itemId, out itemContext);
+    if (result != VSConstants.S_OK)
+        throw new Exception("Unexpected error calling IVsProject.GetItemContext");
+    if (itemContext == null)
+        throw new Exception("IVsProject.GetItemContext returned null");
+
+    ServiceProvider itemContextService = new ServiceProvider(itemContext);
+    EnvDTE.ProjectItem templateItem = (EnvDTE.ProjectItem)itemContextService.GetService(typeof(EnvDTE.ProjectItem));
+
+    return templateItem;
+}
+
+private void DeleteAllT4ChildOutputs()
+{
+    EnvDTE.ProjectItem templateProjectItem = this.GetT4TargetProjectItem();
+    foreach (EnvDTE.ProjectItem childProjectItem in templateProjectItem.ProjectItems)
+    {
+        //if (!__savedOutputs.Contains(childProjectItem.Name))
+            childProjectItem.Delete();
+    }
+}
+
+private static IVsProject __dteProjectToVsProject(EnvDTE.Project project)
+{
+    if (project == null) 
+        throw new ArgumentNullException("project");
+        
+    string projectGuid = null;        
+
+    // DTE does not expose the project GUID that exists at in the msbuild project file.        
+    // Cannot use MSBuild object model because it uses a static instance of the Engine,         
+    // and using the Project will cause it to be unloaded from the engine when the         
+    // GC collects the variable that we declare.       
+    using (XmlReader projectReader = XmlReader.Create(project.FileName))
+    {
+        projectReader.MoveToContent();
+        object nodeName = projectReader.NameTable.Add("ProjectGuid");
+        while (projectReader.Read())
+        {
+            if (Object.Equals(projectReader.LocalName, nodeName))
+            {
+                projectGuid = (string)projectReader.ReadElementContentAsString(); 
+                break;
+            }
+        }
+    }
+    if (string.IsNullOrEmpty(projectGuid))
+        throw new Exception("Unable to find ProjectGuid element in the project file");
+
+    Microsoft.VisualStudio.OLE.Interop.IServiceProvider dteServiceProvider = 
+        (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE;
+    IServiceProvider serviceProvider = new ServiceProvider(dteServiceProvider); 
+    IVsHierarchy vsHierarchy = VsShellUtilities.GetHierarchy(serviceProvider, new Guid(projectGuid));
+        
+    IVsProject vsProject = (IVsProject)vsHierarchy;
+    if (vsProject == null)
+        throw new ArgumentException("Project is not a VS project.");
+    return vsProject;
+}
+
+/// <summary>
+/// Get some Project from Solution
+/// </summary>
+/// <returns></returns>
+public EnvDTE.Project GetSolutionProjectByName(String projectName)
+{
+    EnvDTE.Project prj = null;
+
+    try
+    {
+        List<EnvDTE.Project> listProjects = this.GetAllSolutionProjects();
+
+        prj =
+            (from a in listProjects
+             where (a.Name.Equals(projectName))
+             select a).FirstOrDefault();
+    }
+    catch (Exception) { /* insert your message here */ }
+
+    return prj;
+}
+
+/// <summary>
+/// Get all Projects from Solution
+/// </summary>
+/// <returns></returns>
+public List<EnvDTE.Project> GetAllSolutionProjects()
+{
+    List<EnvDTE.Project> prj = new List<EnvDTE.Project>();
+    try
+    {
+      // Use Visual Studio API to find modeling project:
+      EnvDTE.DTE dte = (EnvDTE.DTE) ((IServiceProvider) this.Host)
+                       .GetService(typeof(EnvDTE.DTE));
+
+        foreach (EnvDTE.Project p in dte.Solution.Projects)
+        {
+            EnvDTE.Project[] returnedProjects = this.getProjectsFromSolution_Recursive(p).ToArray();
+
+            prj.AddRange(returnedProjects);
+        }
+    }
+    catch (Exception) { /* insert your message here */ }
+    return prj;
+}
+
+private List<EnvDTE.Project> getProjectsFromSolution_Recursive(EnvDTE.Project prj)
+{
+    List<EnvDTE.Project> listaPrj = new List<EnvDTE.Project>();
+    try
+    {
+        if (prj.FileName.Trim().Length > 0)
+        {
+            listaPrj.Add(prj);
+        }
+        else
+        {
+            foreach (EnvDTE.ProjectItem pItem in prj.ProjectItems)
+            {
+                if (pItem.Object is EnvDTE.Project)
+                {
+                    if ((pItem.Object as EnvDTE.Project).FileName.Trim().Length > 0)
+                    {
+                        listaPrj.Add((pItem.Object as EnvDTE.Project));
+                    }
+                    else
+                    {
+                        EnvDTE.Project[] returnedProjs = getProjectsFromSolution_Recursive((pItem.Object as EnvDTE.Project)).ToArray();
+
+                        listaPrj.AddRange(returnedProjs);
+                    }
+                }
+            }
+        }
+    }
+    catch (Exception) { /* insert your message here */ }
+
+    return listaPrj;
+}
+
+public bool HasStereotype(IElement element, string profile, string steriotypeName)
+{ 
+	return element.AppliedStereotypes.Any
+   		(s => s.Profile == profile && s.Name == steriotypeName ); 
+}
+
+public bool HasMultiplicityDefined(IMultiplicityElement element)
+{
+	return ((element.LowerValue != null) || (element.UpperValue != null));
+}
+
+private object GetStereotypePropertyValue(IElement element, string profile, string steriotypeName, string propertyName)
+{
+	object _objValue = null;
+	
+	IStereotypeInstance _steriotypeInstance = element.AppliedStereotypes
+		.Where(s => s.Profile == profile && s.Name == steriotypeName)
+		.FirstOrDefault();
+	
+	if (_steriotypeInstance != null)
+	{		
+		IStereotypePropertyInstance _propertyInstance = _steriotypeInstance.PropertyInstances
+				.Where(sp => sp.Name == propertyName)
+				.FirstOrDefault();
+		
+		if (_propertyInstance != null)
+		{
+			_objValue = _propertyInstance.Value;
+		}
+	}
+	
+	return _objValue;
+}
+
+public string UMLClassModel_GetElementGenericParameters(IElement element)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	if (this.HasStereotype(element, this.m_CSharpEagleRayProfileName, "er_generic_element"))
+	{
+		string _strGenericClassParameters = (string)this.GetStereotypePropertyValue(element, this.m_CSharpEagleRayProfileName, "er_generic_element", "GenericParameters");
+		
+		_strBuilder.Append(_strGenericClassParameters.Trim());
+	}
+
+	return _strBuilder.ToString();
+}
+
+
+
+public Dictionary<string, string> UMLClassModel_GetDictGenericSubstitutions(IGeneralization generalization)
+{
+	Dictionary<string, string> _returnDict = new Dictionary<string, string>();
+
+	if (this.HasStereotype(generalization, this.m_CSharpEagleRayProfileName, "er_generic_generalization"))
+	{
+		string _strGenericSubstitutions = (string)this.GetStereotypePropertyValue(generalization, this.m_CSharpEagleRayProfileName, "er_generic_generalization", "GenericSubstitutions");
+		
+		_strGenericSubstitutions = _strGenericSubstitutions.Trim();
+		
+		string _expGenericSubstitutions = @"(\s*(?<replaceItem>((?<genericTypeKey>\w+)\s*[:]\s*(?<genericTypeValue>((\w+[.])*\w+))))(\s*[,]\s*)?)+";
+		
+		Match match = Regex.Match(_strGenericSubstitutions, _expGenericSubstitutions, (RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture));
+		
+		foreach (Capture capture in match.Groups["replaceItem"].Captures)
+		{
+			Match matchCap = Regex.Match(capture.Value, _expGenericSubstitutions, (RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture));
+
+			_returnDict.Add(matchCap.Groups["genericTypeKey"].Value, matchCap.Groups["genericTypeValue"].Value);
+		}
+	}
+
+	return _returnDict;
+}
+
+public string UMLClassModel_GetTypeName(IProperty property)
+{
+	string _strTypeName = property.Type.Name;
+	
+	if (property.Type is IClass)
+	{
+		bool _hasSteriotypeERClassExt = this.HasStereotype(property.Type, this.m_CSharpEagleRayProfileName, "er_class_ext");		
+		
+		bool _autoExtractInterface = false;
+		_autoExtractInterface = Convert.ToBoolean(this.GetStereotypePropertyValue(property.Type, this.m_CSharpEagleRayProfileName, "er_class_ext", "AutoExtractInterface"));
+		
+		if (_autoExtractInterface)
+		{
+			_strTypeName = String.Format("I{0}", property.Type.Name);
+		}
+	}
+
+	if (this.HasMultiplicityDefined(property))
+	{
+		string _higherMultiplicity = String.Empty;
+		if (property.UpperValue != null)
+		{
+			_higherMultiplicity = property.UpperValue.ToString();
+		}
+		else
+		{
+			_higherMultiplicity = property.LowerValue.ToString();
+		}
+		
+		switch (_higherMultiplicity)
+		{
+			case "*":
+			{
+				_strTypeName = String.Format(this.usr_DefaultCollectionTypeFormat, _strTypeName);
+				break;
+			}
+		}
+	}
+	
+	return _strTypeName;
+}
+
+public string UMLClassModel_GetInitialValueForType(string strTypeName, string initialValue)
+{
+	string _strTypeName = strTypeName.ToLower();
+	
+	string _returnValue = String.Empty;
+	
+	if (String.IsNullOrWhiteSpace(initialValue))
+	{
+		bool _isReplaced = false;
+		
+		foreach (KeyValuePair<string, string> itemReplace in this.usr_TypeInicializationsReplace)
+		{
+			if (_strTypeName.Contains(itemReplace.Key.ToLower()))
+			{
+				_returnValue = String.Format("new {0}()", strTypeName.Replace(itemReplace.Key, itemReplace.Value));
+				
+				_isReplaced = true;
+			}
+		}
+		
+		if (!_isReplaced)
+		{
+			if ((_strTypeName.Contains("list")) ||
+				(_strTypeName.Contains("ilist")))
+			{
+				_returnValue = String.Format("new {0}()", strTypeName.Replace("IList", "List"));
+			}
+			else
+			{
+				switch (_strTypeName)
+				{
+					default:
+						{
+							_returnValue = String.Empty;
+							break;
+						}
+				}
+			}
+		}
+	}
+	else
+	{
+		_returnValue = initialValue;
+	}
+	
+	return _returnValue;
+}
+
+public string UMLClassModel_GetPackageUsings(string strTabsIndent, IPackage pkg)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	foreach (IPackageImport _pkgImport in pkg.PackageImports.OrderBy(a=> a.ImportedPackage.Name))
+	{
+		string _strNamespace = String.Empty;
+		bool _isValidPackage = false;
+		
+		if ((_pkgImport.ImportedPackage != null) &&
+			(this.HasStereotype(_pkgImport.ImportedPackage, this.m_CSharpProfileName, "namespace")))
+		{
+			_strNamespace = String.Format("{0}",
+				_pkgImport.ImportedPackage.Name);
+			
+			_isValidPackage = true;
+		}
+		
+		if (_isValidPackage)
+		{
+			_strBuilder.AppendLine(String.Format("{0}using {1};", strTabsIndent, _strNamespace));
+		}
+	}
+	
+	return _strBuilder.ToString();
+}
+
+public string UMLClassModel_ReplaceGenericTypes(string strSource, Dictionary<string, string> _dictGenericKeyValue)
+{
+	string _strReturn = strSource;
+	string _expGenericReplace = @"(?<genericParameters>((?<genericParam>\w+)(\s*[,]\s*)?)+)";
+	
+	MatchEvaluator _MatchEvaluator = (match) =>
+	{
+		StringBuilder _strMatchEvaluatorBuilder = new StringBuilder();
+		
+		if (match.Success)
+		{
+			List<string> _listValuesGenericParameters = new List<string>();
+								
+			foreach (Capture capture in match.Groups["genericParam"].Captures)
+			{
+				if (_dictGenericKeyValue.ContainsKey(capture.Value))
+				{
+					_listValuesGenericParameters.Add(_dictGenericKeyValue[capture.Value]);
+				}
+				else
+				{
+					_listValuesGenericParameters.Add(capture.Value);
+				}
+			}
+			
+			_strMatchEvaluatorBuilder.Append(String.Join(", ", _listValuesGenericParameters.ToArray()));
+		}
+		
+		return _strMatchEvaluatorBuilder.ToString();
+	};
+	
+	_strReturn = Regex.Replace(
+		_strReturn, 
+		_expGenericReplace, 
+		_MatchEvaluator);
+	
+	return _strReturn;
+}
+
+public string UMLClassModel_GetGeneralizations(IClassifier classifier)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+
+	bool _hasSteriotypeERClassExt = this.HasStereotype(classifier, this.m_CSharpEagleRayProfileName, "er_class_ext");
+
+	foreach (IGeneralization item in classifier.Generalizations)
+	{
+		bool _generalIsGeneric = false;
+		string _strGenericInterfaceParameters = this.UMLClassModel_GetElementGenericParameters(item.General);
+		
+		_generalIsGeneric = !String.IsNullOrWhiteSpace(_strGenericInterfaceParameters);
+		
+		if (_strBuilder.Length > 0)
+		{
+			_strBuilder.Append(", ");
+		}
+		
+		if (_generalIsGeneric)
+		{
+			Dictionary<string, string> _dictGenericReplaceMap = this.UMLClassModel_GetDictGenericSubstitutions(item);
+			
+			string _strResultReplaceGenericParams = this.UMLClassModel_ReplaceGenericTypes(_strGenericInterfaceParameters, _dictGenericReplaceMap);
+			
+			_strBuilder.AppendFormat("{0}<{1}>", item.General.Name, _strResultReplaceGenericParams);
+		}
+		else	
+		{
+			_strBuilder.AppendFormat(item.General.Name);
+		}
+	}
+	
+	return _strBuilder.ToString();
+}
+
+public List<IInterface> UMLClassModel_GetRealizedInterfaces(IClassifier classifier)
+{
+	List<IInterface> _returnValue = new List<IInterface>();
+
+	bool _hasSteriotypeERClassExt = this.HasStereotype(classifier, this.m_CSharpEagleRayProfileName, "er_class_ext");
+
+	if (classifier is IBehavioredClassifier)
+	{
+		_returnValue = (classifier as IBehavioredClassifier).GetRealizedInterfaces().ToList();
+	}
+	else
+		if (classifier is IInterface)
+		{
+			_returnValue = classifier.Generalizations
+				.Where(a => (a.General is IInterface))
+				.Select(a => (IInterface)a.General).ToList<IInterface>();
+		}
+	
+	List<IInterface> _tmpParentInterfaces = new List<IInterface>();
+	
+	_returnValue.ForEach(a => 
+	{
+		_tmpParentInterfaces.AddRange(
+			this.UMLClassModel_GetRealizedInterfaces(a));
+	});
+	
+	_returnValue.AddRange(_tmpParentInterfaces);
+	
+	return _returnValue;
+}
+
+public string UMLClassModel_GetRealizations(IBehavioredClassifier classifier)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	foreach (IInterface item in classifier.GetRealizedInterfaces())
+	{
+		if (_strBuilder.Length > 0)
+		{
+			_strBuilder.Append(", ");
+		}
+		
+		_strBuilder.AppendFormat(item.Name);
+	}
+	
+	return _strBuilder.ToString();
+}
+
+public string UMLClassModel_GetSummaryComment(string strTabsIndent, string summaryContent)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	string[] _strCommentLines = summaryContent.Split('\n');
+	
+	if (_strCommentLines.Length > 0)
+	{
+		_strBuilder.AppendLine(String.Format("{0}/// <summary>", strTabsIndent));
+
+		foreach (string strLine in _strCommentLines)
+		{
+			_strBuilder.AppendLine(String.Format("{0}/// {1}", strTabsIndent, strLine));
+		}
+		
+		_strBuilder.AppendFormat("{0}/// </summary>", strTabsIndent);
+	}
+	
+	return _strBuilder.ToString();
+}
+
+public bool UMLClassModel_ClassHasMembers(IClass umlClass)
+{
+	bool  _returnValue = false;
+	
+	_returnValue = (umlClass.OwnedAttributes
+		.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "field")).Count() > 0);
+	
+	if (!_returnValue)
+	{
+		// Get all the associations sourced from this class
+		_returnValue = umlClass.GetOutgoingAssociationEnds()
+			.Any(a => (((!String.IsNullOrWhiteSpace(a.Name))) && (this.HasMultiplicityDefined(a))));
+
+	}
+	
+	return _returnValue;
+}
+
+public List<IProperty> UMLClassModel_GetClassMembers(IClass umlElement)
+{
+	List<IProperty> _returnValue = new List<IProperty>();
+
+	_returnValue.AddRange(umlElement.OwnedAttributes
+		.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "field")).ToArray());
+	
+	// Get all the associations sourced from this class
+	_returnValue.AddRange(umlElement.GetOutgoingAssociationEnds()
+			.Where(a => (((!String.IsNullOrWhiteSpace(a.Name))) &&
+						(this.HasMultiplicityDefined(a)))).ToArray());
+
+	return _returnValue;
+}
+
+public List<IProperty> UMLClassModel_GetClassMembers(IInterface umlElement)
+{
+	List<IProperty> _returnValue = new List<IProperty>();
+
+	_returnValue.AddRange(umlElement.OwnedAttributes
+		.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "field")).ToArray());
+	
+	// Get all the associations sourced from this interface
+	_returnValue.AddRange(umlElement.GetOutgoingAssociationEnds()
+			.Where(a => (((!String.IsNullOrWhiteSpace(a.Name))) &&
+						(this.HasMultiplicityDefined(a)))).ToArray());
+	
+	return _returnValue;
+}
+
+public string UMLClassModel_GetClassMember(string strTabsIndent, IProperty property, IClass classs)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	string _strDefaultValue = String.Empty;
+	if (property.DefaultValue != null)
+	{
+		_strDefaultValue = property.DefaultValue.ToString();
+	}
+
+	string _strTypeName = this.UMLClassModel_GetTypeName(property);
+	string _strInitialValue = string.Empty;
+	string _strFormat = "{0}private {1} m_{2}{3};";
+	
+	if(classs != null && 
+		(!this.HasStereotype(classs, this.m_CSharpEagleRayProfileName, "er_class_vm_ext") || 
+		(this.HasStereotype(classs, this.m_CSharpEagleRayProfileName, "er_class_vm_ext") && !bool.Parse(this.GetStereotypePropertyValue(classs, this.m_CSharpEagleRayProfileName, "er_class_vm_ext","IsEditableObject").ToString()))))
+	{
+		_strInitialValue = this.UMLClassModel_GetInitialValueForType(_strTypeName, _strDefaultValue);
+		if (!String.IsNullOrWhiteSpace(_strInitialValue))
+		{
+			_strInitialValue = String.Format(" = {0}", _strInitialValue);
+		}
+	}
+	else
+	{
+		_strFormat = "{0}public {1} {2}{3};";
+	}
+	
+	_strBuilder.AppendFormat(_strFormat, 
+		strTabsIndent,
+		_strTypeName,
+		property.Name,
+		_strInitialValue);
+	
+	return _strBuilder.ToString();
+}
+
+public string UMLClassModel_GetClassProperty(string strTabsIndent, IProperty property, IClass classs)
+{
+	return UMLClassModel_GetClassProperty(strTabsIndent,property, null, classs);
+}
+
+public string UMLClassModel_GetClassProperty(string strTabsIndent, IProperty property)
+{
+	return this.UMLClassModel_GetClassProperty(strTabsIndent, property, new List<IInterface>());
+}
+
+public string UMLClassModel_GetClassProperty(string strTabsIndent, IProperty property, List<IInterface> _checkableInterfaces)
+{
+	return UMLClassModel_GetClassProperty(strTabsIndent, property, _checkableInterfaces, null);
+}
+
+public string UMLClassModel_GetClassProperty(string strTabsIndent, IProperty property, List<IInterface> _checkableInterfaces, IClass classs)
+{	
+	StringBuilder _strBuilder = new StringBuilder();
+
+	string _strTypeName = this.UMLClassModel_GetTypeName(property);
+	string _strPropertyName = property.Name;
+	string _strPropertyContent = "{ get; set; }";
+	bool _isEditableObject = classs != null && this.HasStereotype(classs, this.m_CSharpEagleRayProfileName, "er_class_vm_ext") &&
+			bool.Parse(this.GetStereotypePropertyValue(classs, this.m_CSharpEagleRayProfileName, "er_class_vm_ext","IsEditableObject").ToString());
+	
+	if ((this.HasStereotype(property, this.m_CSharpProfileName, "field")) ||
+		(this.HasMultiplicityDefined(property)) || _isEditableObject)
+	{		
+		StringBuilder _strBuilderPropertyContent = new StringBuilder();
+		
+		string _getPropertyValueFormat = "return this.m_{0};";
+		string _setPropertyValueFormat = "{0}\t\tthis.m_{1} = value;";
+		if(_isEditableObject)
+		{
+			_getPropertyValueFormat = "return this.currentData.{0};";
+			_setPropertyValueFormat = "{0}\t\tthis.currentData.{1} = value;";
+		}
+		
+		_strBuilderPropertyContent.AppendLine();
+		_strBuilderPropertyContent.Append(String.Format("{0}", strTabsIndent));
+		_strBuilderPropertyContent.AppendLine("{");
+		
+		_strBuilderPropertyContent.Append(String.Format("{0}\tget", strTabsIndent));
+		_strBuilderPropertyContent.Append("{ ");
+		_strBuilderPropertyContent.AppendFormat(_getPropertyValueFormat, _strPropertyName);
+		_strBuilderPropertyContent.AppendLine(" }");
+		
+		_strBuilderPropertyContent.AppendLine(String.Format("{0}\tset", strTabsIndent));
+		_strBuilderPropertyContent.Append(String.Format("{0}\t", strTabsIndent));
+		_strBuilderPropertyContent.AppendLine("{");
+		
+		_strBuilderPropertyContent.AppendLine(String.Format(_setPropertyValueFormat, strTabsIndent, _strPropertyName));
+		
+		if (this.usr_PropertySetAditionalContentLines.Count > 0)
+		{
+			_strBuilderPropertyContent.AppendLine();
+			
+			foreach (string _strLine in this.usr_PropertySetAditionalContentLines)
+			{
+				string _tmplReplacedLine = _strLine;
+				
+				_tmplReplacedLine = _tmplReplacedLine.Replace("%propertyName%", _strPropertyName);
+				
+				 _strBuilderPropertyContent.AppendLine(String.Format("{0}\t\t{1}", strTabsIndent, _tmplReplacedLine));
+			}
+		}
+		
+		/*
+		if (property.Owner != null)
+		{
+			if ((property.Owner.Owner != null) &&
+				(property.Owner.Owner is IPackage))
+			{
+				if ((this.HasStereotype(property.Owner.Owner, this.m_CSharpEagleRayProfileName, "er_bc_viewmodels")) ||
+					(this.HasStereotype(property.Owner.Owner, this.m_CSharpEagleRayProfileName, "er_bc_viewmodelinterfaces")))
+				{
+				}
+			}
+		}
+		*/
+		_strBuilderPropertyContent.Append(String.Format("{0}\t", strTabsIndent));
+		_strBuilderPropertyContent.AppendLine("}");
+
+		_strBuilderPropertyContent.Append(String.Format("{0}", strTabsIndent));
+		_strBuilderPropertyContent.Append("}");
+		
+		_strPropertyContent = _strBuilderPropertyContent.ToString();
+	}
+	
+	string _propSummary = this.UMLClassModel_GetSummaryComment(strTabsIndent, property.Description);
+	if (!String.IsNullOrWhiteSpace(_propSummary))
+	{
+		_strBuilder.AppendLine(_propSummary);
+	}
+	
+	_strBuilder.AppendFormat("{0}public {1} {2} {3}", 
+		strTabsIndent,
+		_strTypeName,
+		_strPropertyName,
+		_strPropertyContent);
+	
+	return _strBuilder.ToString();
+}
+
+public String UMLClassModel_GetOperationParameter(IParameter parameter)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	string _strTypeName = parameter.Type.Name;
+	string _strParamName = parameter.Name;
+	
+	_strBuilder.AppendFormat("{0} {1}", 
+		_strTypeName.Trim(),
+		_strParamName.Trim());
+	
+	return _strBuilder.ToString();
+}
+
+public String UMLClassModel_GetNonImplementedMethod(string strTabsIndent, IOperation operation)
+{
+	return this.UMLClassModel_GetNonImplementedMethod(strTabsIndent, operation, new List<IInterface>());
+}
+
+public String UMLClassModel_GetNonImplementedMethod(string strTabsIndent, IOperation operation, List<IInterface> _checkableInterfaces)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	string _strOperReturnType = "void";
+	string _strOperationName = operation.Name;
+	string _strOperationParameters = String.Empty;
+	Dictionary<string, string> _dictGenericReplaceMap = new Dictionary<string, string>();
+
+	if (operation.Type != null)
+	{
+		_strOperReturnType = operation.Type.Name;
+	}
+	
+	if (operation.Interface != null)
+	{
+		IGeneralization _InterfaceGeneralization = null;
+		
+		foreach (IInterface _specificInterface in operation.Interface.GetSpecifics()
+			.Where(a => (a is IInterface) && (_checkableInterfaces.Contains(a))))
+		{
+			_InterfaceGeneralization = _specificInterface.Generalizations
+				.Where(a => a.General == operation.Interface).FirstOrDefault();
+		}
+
+		if (_InterfaceGeneralization != null)
+		{
+			_dictGenericReplaceMap = this.UMLClassModel_GetDictGenericSubstitutions(_InterfaceGeneralization);
+		}
+	}
+	
+	if (_dictGenericReplaceMap.Count > 0)
+	{
+		_strOperReturnType = this.UMLClassModel_ReplaceGenericTypes(_strOperReturnType, _dictGenericReplaceMap);
+	}
+	
+	if (operation.OwnedParameters.Count() > 0)
+	{
+		List<string> _listStrParameters = new List<string>();
+		
+		(from a in operation.OwnedParameters
+		where (!String.IsNullOrWhiteSpace(a.Name))
+		select a).ToList().ForEach(a => 
+		{
+			string _strParameter = this.UMLClassModel_GetOperationParameter(a);
+						
+			if (_dictGenericReplaceMap.Count > 0)
+			{
+				_strParameter = this.UMLClassModel_ReplaceGenericTypes(_strParameter, _dictGenericReplaceMap);
+			}	
+			
+			_listStrParameters.Add(_strParameter);
+		});
+		
+		_strOperationParameters = String.Join(", ", _listStrParameters.ToArray());
+	}
+	
+	if (this.HasStereotype(operation, this.m_CSharpProfileName, "method"))
+	{
+		string _strOperationSummary = this.UMLClassModel_GetSummaryComment(strTabsIndent, operation.Description);
+		if (!String.IsNullOrWhiteSpace(_strOperationSummary))
+		{
+			_strBuilder.AppendLine(_strOperationSummary);
+		}
+		
+		string _strGenericOperationParameters = this.UMLClassModel_GetElementGenericParameters(operation);
+		if (!String.IsNullOrWhiteSpace(_strGenericOperationParameters))
+		{
+			_strOperationName = String.Format("{0}<{1}>", _strOperationName, _strGenericOperationParameters);
+		}
+
+		string _methodFormart = "{0}public {1} {2}({3})";
+		
+		if(operation.IsStatic == true)
+		{
+			_methodFormart = "{0}public static {1} {2}({3})";
+		}
+
+		_strBuilder.AppendLine(String.Format(_methodFormart,
+				strTabsIndent,
+				_strOperReturnType,
+				_strOperationName,
+				_strOperationParameters));
+
+		_strBuilder.Append(strTabsIndent);
+		_strBuilder.AppendLine("{");
+		_strBuilder.AppendLine();
+		
+		_strBuilder.AppendLine(String.Format("{0}\tthrow new NotImplementedException();", strTabsIndent));
+		
+		_strBuilder.AppendLine();
+		_strBuilder.Append(strTabsIndent);
+		_strBuilder.Append("}");
+	}
+	
+	return _strBuilder.ToString();
+}
+
+public string UMLClassModel_GetInterfaceProperty(string strTabsIndent, IProperty property)
+{	
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	string _strTypeName = this.UMLClassModel_GetTypeName(property);
+	string _strPropertyName = property.Name;
+	string _strPropertyContent = "{ get; set; }";
+	
+	string _strPropertySummary = this.UMLClassModel_GetSummaryComment(strTabsIndent, property.Description);
+	if (!String.IsNullOrWhiteSpace(_strPropertySummary))
+	{
+		_strBuilder.AppendLine(_strPropertySummary);
+	}
+	
+	_strBuilder.AppendFormat("{0}{1} {2} {3}", 
+		strTabsIndent,
+		_strTypeName,
+		_strPropertyName,
+		_strPropertyContent);
+
+	return _strBuilder.ToString();
+}
+
+public string UMLClassModel_GetInterfaceOperation(string strTabsIndent, IOperation operation)
+{	
+	StringBuilder _strBuilder = new StringBuilder();
+
+	string _strOperReturnType = "void";
+	string _strOperationName = operation.Name;
+	string _strOperationParameters = String.Empty;
+	
+	if (operation.Type != null)
+	{
+		_strOperReturnType = operation.Type.Name;
+	}
+	
+	if (operation.OwnedParameters.Count() > 0)
+	{
+		List<string> _listStrParameters = new List<string>();
+		
+		(from a in operation.OwnedParameters
+		 where (!String.IsNullOrWhiteSpace(a.Name))
+		 select a).ToList().ForEach(a => _listStrParameters.Add(this.UMLClassModel_GetOperationParameter(a)) );
+		
+		_strOperationParameters = String.Join(", ", _listStrParameters.ToArray());
+	}
+	
+	if (this.HasStereotype(operation, this.m_CSharpProfileName, "method"))
+	{
+		string _strOperationSummary = this.UMLClassModel_GetSummaryComment(strTabsIndent, operation.Description);
+		if (!String.IsNullOrWhiteSpace(_strOperationSummary))
+		{
+			_strBuilder.AppendLine(_strOperationSummary);
+		}
+
+		string _strGenericOperationParameters = this.UMLClassModel_GetElementGenericParameters(operation);
+		if (!String.IsNullOrWhiteSpace(_strGenericOperationParameters))
+		{
+			_strOperationName = String.Format("{0}<{1}>", _strOperationName, _strGenericOperationParameters);
+		}
+
+		_strBuilder.AppendFormat("{0}{1} {2}({3});",
+				strTabsIndent,
+				_strOperReturnType,
+				_strOperationName,
+				_strOperationParameters);
+	}
+	
+	return _strBuilder.ToString();
+}
+
+#>
+<#+ 
+
+public string ExtractInterface(string strTabIdentation, IClass umlElement)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+
+	bool _hasSteriotypeERClassExt = this.HasStereotype(umlElement, this.m_CSharpEagleRayProfileName, "er_class_ext");
+
+	bool _ERClassExt_AutoExtractInterface = false;
+	if (_hasSteriotypeERClassExt)
+	{
+		_ERClassExt_AutoExtractInterface = Convert.ToBoolean(this.GetStereotypePropertyValue(umlElement, this.m_CSharpEagleRayProfileName, "er_class_ext", "AutoExtractInterface"));
+	}
+	
+	string _strInterfaceName = String.Empty;				
+	string _strInherits = String.Empty;
+
+	_strInterfaceName = String.Format("I{0}", umlElement.Name);
+
+	string _strRealizations = String.Empty;
+	_strRealizations = this.UMLClassModel_GetRealizations(umlElement);
+
+	if (!String.IsNullOrWhiteSpace(_strRealizations))
+	{
+		_strInherits = _strRealizations;
+	}
+
+	string _strInterfaceSummary = this.UMLClassModel_GetSummaryComment("\t", umlElement.Description);
+	if (!String.IsNullOrWhiteSpace(_strInterfaceSummary))
+	{
+		_strBuilder.AppendLine(_strInterfaceSummary);
+	}
+
+	string _strGenericInterfaceParameters = this.UMLClassModel_GetElementGenericParameters(umlElement);
+	if (!String.IsNullOrWhiteSpace(_strGenericInterfaceParameters))
+	{
+		_strInterfaceName = String.Format("{0}<{1}>", _strInterfaceName, _strGenericInterfaceParameters);
+	}
+
+	_strBuilder.Append(strTabIdentation);
+	_strBuilder.Append("public");
+
+	bool _isPartial = Boolean.Parse(this.GetStereotypePropertyValue(umlElement, this.m_CSharpProfileName, "class", "IsPartial").ToString());
+	if (_isPartial)
+	{
+		_strBuilder.Append(" partial");
+	}
+
+	_strBuilder.Append(" interface");
+
+	_strBuilder.AppendFormat(" {0}", _strInterfaceName);
+
+	if (!String.IsNullOrWhiteSpace(_strInherits))
+	{
+		_strBuilder.AppendFormat(" : {0}", _strInherits);
+	}
+	
+	_strBuilder.AppendLine();
+	_strBuilder.Append(strTabIdentation);
+	_strBuilder.AppendLine("{");
+	
+	_strBuilder.AppendLine();
+	_strBuilder.AppendLine(String.Format("{0}\t#region Properties", strTabIdentation));	
+	_strBuilder.AppendLine();
+
+	foreach (IProperty interfaceProp in umlElement.OwnedAttributes.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "property")))
+	{
+		bool _hasSteriotypeERPropertyExt = this.HasStereotype(interfaceProp, this.m_CSharpEagleRayProfileName, "er_property_ext");
+
+		bool _ERPropertyExt_ExtractToInterface = true;
+		if (_hasSteriotypeERPropertyExt)
+		{
+			_ERPropertyExt_ExtractToInterface = Convert.ToBoolean(this.GetStereotypePropertyValue(interfaceProp, this.m_CSharpEagleRayProfileName, "er_property_ext", "ExtractToInterface"));
+		}
+		
+		if ((_ERClassExt_AutoExtractInterface) && 
+			(!_ERPropertyExt_ExtractToInterface))
+		{
+			continue;
+		}
+
+		_strBuilder.AppendLine(this.UMLClassModel_GetInterfaceProperty(String.Format("{0}\t", strTabIdentation), interfaceProp));
+		_strBuilder.AppendLine();
+	}
+
+	// Get all the associations sourced from this class
+	foreach (IProperty p in umlElement.GetOutgoingAssociationEnds())
+	{
+		IAssociation association = p.Association;
+
+		if (!String.IsNullOrWhiteSpace(p.Name))
+		{
+			bool _hasSteriotypeERPropertyExt = this.HasStereotype(p, this.m_CSharpEagleRayProfileName, "er_property_ext");
+
+			bool _ERPropertyExt_ExtractToInterface = true;
+			if (_hasSteriotypeERPropertyExt)
+			{
+				_ERPropertyExt_ExtractToInterface = Convert.ToBoolean(this.GetStereotypePropertyValue(p, this.m_CSharpEagleRayProfileName, "er_property_ext", "ExtractToInterface"));
+			}
+			
+			if ((_ERClassExt_AutoExtractInterface) && 
+				(!_ERPropertyExt_ExtractToInterface))
+			{
+				continue;
+			}
+
+			_strBuilder.AppendLine(this.UMLClassModel_GetInterfaceProperty(String.Format("{0}\t", strTabIdentation), p));
+			_strBuilder.AppendLine();
+		}
+	}
+
+	_strBuilder.AppendLine(String.Format("{0}\t#endregion Properties", strTabIdentation));
+
+	_strBuilder.AppendLine();
+	_strBuilder.AppendLine(String.Format("{0}\t#region Methods", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	foreach (IOperation interfaceOper in umlElement.OwnedOperations.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "method")))
+	{
+		bool _hasSteriotypeEROperationExt = this.HasStereotype(interfaceOper, this.m_CSharpEagleRayProfileName, "er_operation_ext");
+
+		bool _EROperationExt_ExtractToInterface = true;
+		if (_hasSteriotypeEROperationExt)
+		{
+			_EROperationExt_ExtractToInterface = Convert.ToBoolean(this.GetStereotypePropertyValue(interfaceOper, this.m_CSharpEagleRayProfileName, "er_operation_ext", "ExtractToInterface"));
+		}
+		
+		if ((_ERClassExt_AutoExtractInterface) && 
+			(!_EROperationExt_ExtractToInterface))
+		{
+			continue;
+		}
+
+		_strBuilder.AppendLine(this.UMLClassModel_GetInterfaceOperation(String.Format("{0}\t", strTabIdentation), interfaceOper));
+		_strBuilder.AppendLine();
+	}
+
+	_strBuilder.AppendLine(String.Format("{0}\t#endregion Methods", strTabIdentation));
+
+	_strBuilder.AppendLine();
+	_strBuilder.Append(strTabIdentation);
+	_strBuilder.AppendLine("}");
+
+	return _strBuilder.ToString();
+}
+
+public string GetClassicInterface(string strTabIdentation, IInterface umlInterface)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	string _strInterfaceName = String.Empty;				
+	string _strInherits = String.Empty;
+
+	_strInterfaceName = umlInterface.Name;
+
+	string _strGeneralizations = String.Empty;
+	_strGeneralizations = this.UMLClassModel_GetGeneralizations(umlInterface);
+
+	if (!String.IsNullOrWhiteSpace(_strGeneralizations))
+	{
+		_strInherits = String.Format(" : {0}", _strGeneralizations);
+	}
+
+	string _strInterfaceSummary = this.UMLClassModel_GetSummaryComment("\t", umlInterface.Description);
+	if (!String.IsNullOrWhiteSpace(_strInterfaceSummary))
+	{
+		_strBuilder.AppendLine(_strInterfaceSummary);
+	}
+
+	string _strGenericInterfaceParameters = this.UMLClassModel_GetElementGenericParameters(umlInterface);
+	if (!String.IsNullOrWhiteSpace(_strGenericInterfaceParameters))
+	{
+		_strInterfaceName = String.Format("{0}<{1}>", _strInterfaceName, _strGenericInterfaceParameters);
+	}
+
+	_strBuilder.Append(strTabIdentation);
+	_strBuilder.Append("public");
+
+	bool _isPartial = Boolean.Parse(this.GetStereotypePropertyValue(umlInterface, this.m_CSharpProfileName, "interface", "IsPartial").ToString());
+	if (_isPartial)
+	{
+		_strBuilder.Append(" partial");
+	}
+
+	_strBuilder.Append(" interface");
+
+	_strBuilder.AppendFormat(" {0}", _strInterfaceName);
+
+	if (!String.IsNullOrWhiteSpace(_strInherits))
+	{
+		_strBuilder.AppendFormat("{0}", _strInherits);
+	}
+	
+	_strBuilder.AppendLine();
+	_strBuilder.Append(strTabIdentation);
+	_strBuilder.AppendLine("{");
+	
+	_strBuilder.AppendLine();
+	_strBuilder.AppendLine(String.Format("{0}\t#region Properties", strTabIdentation));	
+	_strBuilder.AppendLine();
+
+	foreach (IProperty interfaceProp in umlInterface.OwnedAttributes.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "property")))
+	{
+		_strBuilder.AppendLine(this.UMLClassModel_GetInterfaceProperty(String.Format("{0}\t", strTabIdentation), interfaceProp));
+		_strBuilder.AppendLine();
+	}
+
+	// Get all the associations sourced from this class
+	foreach (IProperty p in umlInterface.GetOutgoingAssociationEnds())
+	{
+		IAssociation association = p.Association;
+
+		if (!String.IsNullOrWhiteSpace(p.Name))
+		{
+			_strBuilder.AppendLine(this.UMLClassModel_GetInterfaceProperty(String.Format("{0}\t", strTabIdentation), p));
+			_strBuilder.AppendLine();
+		}
+	}
+
+	_strBuilder.AppendLine(String.Format("{0}\t#endregion Properties", strTabIdentation));
+
+	_strBuilder.AppendLine();
+	_strBuilder.AppendLine(String.Format("{0}\t#region Methods", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	foreach (IOperation interfaceOper in umlInterface.OwnedOperations.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "method")))
+	{
+		_strBuilder.AppendLine(this.UMLClassModel_GetInterfaceOperation(String.Format("{0}\t", strTabIdentation), interfaceOper));
+		_strBuilder.AppendLine();
+	}
+
+	_strBuilder.AppendLine(String.Format("{0}\t#endregion Methods", strTabIdentation));
+
+	_strBuilder.AppendLine();
+	_strBuilder.Append(strTabIdentation);
+	_strBuilder.AppendLine("}");
+
+	return _strBuilder.ToString();
+}
+
+public string GetDataMemberAttribute(string[] attributeParams)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+	
+	_strBuilder.Append("[DataMember");
+	
+	if ((attributeParams != null) && (attributeParams.Length > 0))
+	{
+		_strBuilder.Append("(");
+		
+		_strBuilder.Append(String.Join(",", attributeParams));
+		
+		_strBuilder.Append(")");
+	}
+
+	_strBuilder.Append("]");
+	
+	return _strBuilder.ToString();
+}
+
+public string GetClassicClass(string strTabIdentation, IClass umlClass)
+{
+	StringBuilder _strBuilder = new StringBuilder();
+
+	bool _hasSteriotypeERClassExt = this.HasStereotype(umlClass, this.m_CSharpEagleRayProfileName, "er_class_ext");
+	
+	string _strClassName = umlClass.Name;
+	string _strConstructorClassName = umlClass.Name;
+
+	string _strGeneralizations = String.Empty;
+	_strGeneralizations = this.UMLClassModel_GetGeneralizations(umlClass);
+
+	string _strRealizations = String.Empty;
+	_strRealizations = this.UMLClassModel_GetRealizations(umlClass);
+	
+	string _strEntityContextTypeName = null;
+	object _support2wcf = null;
+	bool _isEditableObject = false;
+	
+	if (this.HasStereotype(umlClass.Package, this.m_CSharpEagleRayProfileName, "er_transferobjects"))
+	{
+		_support2wcf = this.GetStereotypePropertyValue(umlClass.Package, this.m_CSharpEagleRayProfileName, "er_transferobjects", "Support2WCF");
+	}
+	
+	if (this.HasStereotype(umlClass.Package, this.m_CSharpEagleRayProfileName, "er_businesstasks")) 
+	{
+		_strEntityContextTypeName = this.GetStereotypePropertyValue(umlClass.Package,this.m_CSharpEagleRayProfileName, "er_businesstasks","EntityContextTypeName") as string;
+	}
+	
+	if(this.HasStereotype(umlClass.Package, this.m_CSharpEagleRayProfileName, "er_businessentities"))
+	{
+		_strEntityContextTypeName = this.GetStereotypePropertyValue(umlClass.Package,this.m_CSharpEagleRayProfileName, "er_businessentities","EntityContextTypeName") as string;
+	}
+	
+	if(this.HasStereotype(umlClass, this.m_CSharpEagleRayProfileName, "er_class_vm_ext") &&
+			bool.Parse(this.GetStereotypePropertyValue(umlClass, this.m_CSharpEagleRayProfileName, "er_class_vm_ext","IsEditableObject").ToString()))
+	{
+		_isEditableObject = true;
+	}
+	
+	if (_hasSteriotypeERClassExt)
+	{
+		bool _autoExtractInterface = false;
+		_autoExtractInterface = Convert.ToBoolean(this.GetStereotypePropertyValue(umlClass, this.m_CSharpEagleRayProfileName, "er_class_ext", "AutoExtractInterface"));
+		
+		if (_autoExtractInterface)
+		{
+			_strRealizations = String.Format("I{0}", _strClassName);
+		}
+	}
+	
+	List<IInterface> _RealizedInterfaces = this.UMLClassModel_GetRealizedInterfaces(umlClass);
+
+	string _strGenericClassParameters = this.UMLClassModel_GetElementGenericParameters(umlClass);
+	if (!String.IsNullOrWhiteSpace(_strGenericClassParameters))
+	{
+		_strClassName = String.Format("{0}<{1}>", _strClassName, _strGenericClassParameters);
+	}
+
+	if(_support2wcf != null && bool.Parse(_support2wcf.ToString()))
+	{
+		_strBuilder.Append(strTabIdentation);	
+		//_strBuilder.Append("[DataContract(IsReference = true");
+		_strBuilder.Append("[DataContract(");
+
+		if ((usr_DataContractAditionalAttributeParams != null) && (usr_DataContractAditionalAttributeParams.Count > 0))
+		{
+			int _aditionalAttributeParams = 0;
+			foreach(var itemParamAttribute in usr_DataContractAditionalAttributeParams)
+			{
+				_aditionalAttributeParams++;
+
+				if (_aditionalAttributeParams < usr_DataContractAditionalAttributeParams.Count)
+					_strBuilder.AppendFormat(", ");
+
+				_strBuilder.AppendFormat("{0}", itemParamAttribute);
+			}
+		}
+
+		_strBuilder.Append(")]");
+
+		_strBuilder.AppendLine();
+	}
+	
+	_strBuilder.Append(strTabIdentation);	
+	
+	_strBuilder.Append("public");
+	
+	bool _isPartial = Boolean.Parse(this.GetStereotypePropertyValue(umlClass, this.m_CSharpProfileName, "class", "IsPartial").ToString());
+	if (_isPartial)
+	{
+		_strBuilder.Append(" partial");
+	}
+
+	_strBuilder.Append(" class");
+
+	_strBuilder.AppendFormat(" {0}", _strClassName);
+
+	if ((!String.IsNullOrWhiteSpace(_strGeneralizations)) ||
+		(!String.IsNullOrWhiteSpace(_strRealizations)))
+	{
+		_strBuilder.Append(" : ");
+		
+		_strBuilder.Append(_strGeneralizations.Trim());
+		
+		if (!String.IsNullOrWhiteSpace(_strRealizations))
+		{
+			if (!String.IsNullOrWhiteSpace(_strGeneralizations))
+			{
+				_strBuilder.Append(", ");
+			}
+			
+			_strBuilder.Append(_strRealizations.Trim());
+		}
+	}
+	
+	_strBuilder.AppendLine();
+	
+	_strBuilder.Append(strTabIdentation);
+	_strBuilder.AppendLine("{");
+	_strBuilder.AppendLine();
+	
+	if(_isEditableObject)
+	{
+		_strBuilder.AppendLine(String.Format("{0}\t#region Struct Data", strTabIdentation));
+		_strBuilder.AppendLine();
+		
+		_strBuilder.AppendLine(string.Format("{0}\tpublic struct _internalData", strTabIdentation));
+		_strBuilder.Append(strTabIdentation);
+		_strBuilder.Append(strTabIdentation);
+		_strBuilder.AppendLine("{");
+
+		foreach (IProperty classProp in umlClass.OwnedAttributes
+			.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "property") || this.HasStereotype(a, this.m_CSharpProfileName, "field")))
+		{
+			_strBuilder.AppendLine(this.UMLClassModel_GetClassMember(String.Format("{0}\t\t", strTabIdentation), classProp, umlClass));
+		}
+		
+		// Get all the associations sourced from this class
+		foreach (IProperty classProp in umlClass.GetOutgoingAssociationEnds())
+		{
+			_strBuilder.AppendLine(this.UMLClassModel_GetClassMember(String.Format("{0}\t\t", strTabIdentation), classProp, umlClass));
+		}
+		
+		_strBuilder.Append(strTabIdentation);
+		_strBuilder.Append(strTabIdentation);
+		_strBuilder.AppendLine("}");
+		_strBuilder.AppendLine();
+		
+		_strBuilder.AppendLine(String.Format("{0}\t#endregion Struct Data", strTabIdentation));
+		_strBuilder.AppendLine();
+	}
+	
+	_strBuilder.AppendLine(String.Format("{0}\t#region Members", strTabIdentation));
+	_strBuilder.AppendLine();
+	
+	if (this.HasStereotype(umlClass.Package, this.m_CSharpEagleRayProfileName, "er_businesstasks") || this.HasStereotype(umlClass.Package, this.m_CSharpEagleRayProfileName, "er_businessentities"))
+	{
+		_strBuilder.Append(string.Format("{0}\tprivate ",strTabIdentation));
+		_strBuilder.Append(_strEntityContextTypeName);
+		_strBuilder.Append(" m_EntityContext = null;");
+		_strBuilder.AppendLine();
+	}
+	
+	if(!_isEditableObject)
+	{
+		foreach (IProperty classProp in this.UMLClassModel_GetClassMembers(umlClass))
+		{
+			_strBuilder.AppendLine(this.UMLClassModel_GetClassMember(String.Format("{0}\t", strTabIdentation), classProp, umlClass));
+		}
+
+		foreach (IInterface implementedInterface in _RealizedInterfaces)
+		{
+			foreach (IProperty classProp in this.UMLClassModel_GetClassMembers(implementedInterface))
+			{
+				_strBuilder.AppendLine(this.UMLClassModel_GetClassMember(String.Format("{0}\t", strTabIdentation), classProp, umlClass));
+			}
+		}
+	}
+	
+	_strBuilder.AppendLine();
+	_strBuilder.AppendLine(String.Format("{0}\t#endregion Members", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	_strBuilder.AppendLine(String.Format("{0}\t#region Properties", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	List<string> _dataMemberAttParams = new List<string>(usr_DataMemberAditionalAttributeParams);
+	
+	string _dataMemberAttribute = this.GetDataMemberAttribute(_dataMemberAttParams.ToArray());
+	
+	foreach (IInterface implementedInterface in _RealizedInterfaces)
+	{
+		string _strInterfaceName = implementedInterface.Name;
+		
+		bool _hasProperties = false;
+		
+		_hasProperties = implementedInterface.OwnedAttributes.Any(a => this.HasStereotype(a, this.m_CSharpProfileName, "property"));
+		
+		if (_hasProperties)
+		{					
+			_strBuilder.AppendLine(String.Format("{0}\t#region {1} Members", strTabIdentation, _strInterfaceName));
+			_strBuilder.AppendLine();
+			
+			foreach (IProperty interfaceProp in implementedInterface.OwnedAttributes.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "property")))
+			{
+				String _strPropertyImpl = this.UMLClassModel_GetClassProperty(String.Format("{0}\t", strTabIdentation), interfaceProp, _RealizedInterfaces, umlClass);
+
+				if(_support2wcf != null && bool.Parse(_support2wcf.ToString()))
+				{
+					_strBuilder.Append(strTabIdentation + strTabIdentation);	
+					_strBuilder.Append(_dataMemberAttribute);
+					_strBuilder.AppendLine();
+				}
+				
+				_strBuilder.AppendLine(_strPropertyImpl);
+				_strBuilder.AppendLine();
+			}
+
+			// Get all the associations sourced from this class
+			foreach (IProperty p in implementedInterface.GetOutgoingAssociationEnds())
+			{
+				IAssociation association = p.Association;
+
+				if (!String.IsNullOrWhiteSpace(p.Name))
+				{
+					if(_support2wcf != null && bool.Parse(_support2wcf.ToString()))
+					{
+						_strBuilder.Append(strTabIdentation + strTabIdentation);	
+						_strBuilder.Append(_dataMemberAttribute);
+						_strBuilder.AppendLine();
+					}
+					
+					_strBuilder.AppendLine(this.UMLClassModel_GetClassProperty(String.Format("{0}\t", strTabIdentation), p, umlClass));
+					_strBuilder.AppendLine();
+				}
+			}
+
+			_strBuilder.AppendLine(String.Format("{0}\t#endregion {1} Members", strTabIdentation, _strInterfaceName));
+			_strBuilder.AppendLine();
+		}
+	}
+	
+	foreach (IProperty classProp in umlClass.OwnedAttributes
+		.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "property")))
+	{
+		if(_support2wcf != null && bool.Parse(_support2wcf.ToString()))
+		{
+			_strBuilder.Append(strTabIdentation + strTabIdentation);	
+			_strBuilder.Append(_dataMemberAttribute);
+			_strBuilder.AppendLine();
+		}
+		
+		_strBuilder.AppendLine(this.UMLClassModel_GetClassProperty(String.Format("{0}\t", strTabIdentation), classProp, umlClass));
+		_strBuilder.AppendLine();
+	}
+	
+	// Get all the associations sourced from this class
+	foreach (IProperty p in umlClass.GetOutgoingAssociationEnds())
+	{
+		IAssociation association = p.Association;
+
+		if (!String.IsNullOrWhiteSpace(p.Name))
+		{
+			if(_support2wcf != null && bool.Parse(_support2wcf.ToString()))
+			{
+				_strBuilder.Append(strTabIdentation + strTabIdentation);	
+				_strBuilder.Append(_dataMemberAttribute);
+				_strBuilder.AppendLine();
+			}
+			
+			_strBuilder.AppendLine(this.UMLClassModel_GetClassProperty(String.Format("{0}\t", strTabIdentation), p, umlClass));
+			_strBuilder.AppendLine();
+		}
+	}
+
+	_strBuilder.AppendLine(String.Format("{0}\t#endregion Properties", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	_strBuilder.AppendLine(String.Format("{0}\t#region Constructors", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	if (this.HasStereotype(umlClass.Package, this.m_CSharpEagleRayProfileName, "er_businesstasks") || this.HasStereotype(umlClass.Package, this.m_CSharpEagleRayProfileName, "er_businessentities"))
+	{
+		_strBuilder.Append(string.Format("{0}\tpublic ", strTabIdentation));
+		_strBuilder.Append(_strConstructorClassName);
+		_strBuilder.AppendLine(String.Format("({0} entityContext)",_strEntityContextTypeName));
+		_strBuilder.AppendLine("\t\t{");
+		_strBuilder.AppendLine("\t\t\tthis.m_EntityContext = entityContext;");
+		_strBuilder.AppendLine("\t\t}");
+		_strBuilder.AppendLine();
+	}
+	
+	if(_isEditableObject)
+	{
+		_strBuilder.Append(string.Format("{0}\tpublic ", strTabIdentation));
+		_strBuilder.Append(_strConstructorClassName);
+		_strBuilder.AppendLine("()");
+		_strBuilder.AppendLine("\t\t{");
+		
+		foreach (IProperty property in umlClass.OwnedAttributes
+			.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "property") || this.HasStereotype(a, this.m_CSharpProfileName, "field")))
+		{
+			string _strDefaultValue = String.Empty;
+			if (property.DefaultValue != null)
+			{
+				_strDefaultValue = property.DefaultValue.ToString();
+			}
+
+			string _strTypeName = this.UMLClassModel_GetTypeName(property);
+			string _strInitialValue = this.UMLClassModel_GetInitialValueForType(_strTypeName, _strDefaultValue);
+			if (!String.IsNullOrWhiteSpace(_strInitialValue))
+			{
+				_strInitialValue = String.Format("this.currentData.{0} = {1};", property.Name, _strInitialValue);
+				_strBuilder.AppendLine(string.Format("\t\t\t{0}",_strInitialValue));
+			}
+		}
+		
+		// Get all the associations sourced from this class
+		foreach (IProperty property in umlClass.GetOutgoingAssociationEnds())
+		{
+			string _strDefaultValue = String.Empty;
+			if (property.DefaultValue != null)
+			{
+				_strDefaultValue = property.DefaultValue.ToString();
+			}
+
+			string _strTypeName = this.UMLClassModel_GetTypeName(property);
+			string _strInitialValue = this.UMLClassModel_GetInitialValueForType(_strTypeName, _strDefaultValue);
+			if (!String.IsNullOrWhiteSpace(_strInitialValue))
+			{
+				_strInitialValue = String.Format("this.currentData.{0} = {1};", property.Name, _strInitialValue);
+				_strBuilder.AppendLine(string.Format("\t\t\t{0}",_strInitialValue));
+			}
+		}
+		
+		_strBuilder.AppendLine("\t\t}");
+		_strBuilder.AppendLine();
+		
+		
+	}
+	
+	_strBuilder.AppendLine(String.Format("{0}\t#endregion Constructors", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	_strBuilder.AppendLine(String.Format("{0}\t#region Methods", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	foreach (IInterface implementedInterface in _RealizedInterfaces)
+	{
+		string _strInterfaceName = implementedInterface.Name;
+		
+		bool _hasOperations = false;
+		
+		_hasOperations = implementedInterface.OwnedOperations.Any(a => this.HasStereotype(a, this.m_CSharpProfileName, "method"));
+		
+		if (_hasOperations)
+		{					
+			_strBuilder.AppendLine(String.Format("{0}\t#region {1} Members", strTabIdentation, _strInterfaceName));
+			_strBuilder.AppendLine();
+			
+			foreach (IOperation interfaceOper in implementedInterface.OwnedOperations.Where(a => this.HasStereotype(a, this.m_CSharpProfileName, "method")))
+			{
+				String _strOperationNonImp = this.UMLClassModel_GetNonImplementedMethod(String.Format("{0}\t", strTabIdentation), interfaceOper, _RealizedInterfaces);
+				
+				_strBuilder.AppendLine(_strOperationNonImp);
+				_strBuilder.AppendLine();
+			}
+		
+			_strBuilder.AppendLine(String.Format("{0}\t#endregion {1} Members", strTabIdentation, _strInterfaceName));
+			_strBuilder.AppendLine();
+		}
+
+	}
+	
+	_strBuilder.AppendLine(String.Format("{0}\t#region Implementation", strTabIdentation));
+	_strBuilder.AppendLine();
+	
+	foreach (IOperation operation in umlClass.OwnedOperations.Where(a => (a.Interface == null) && this.HasStereotype(a, this.m_CSharpProfileName, "method")))
+	{
+		String _strOperationNonImp = this.UMLClassModel_GetNonImplementedMethod(String.Format("{0}\t", strTabIdentation), operation);
+		
+		_strBuilder.AppendLine(_strOperationNonImp);
+		_strBuilder.AppendLine();
+	}
+	
+	_strBuilder.AppendLine(String.Format("{0}\t#endregion Implementation", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	_strBuilder.AppendLine(String.Format("{0}\t#endregion Methods", strTabIdentation));
+	_strBuilder.AppendLine();
+
+	_strBuilder.Append(strTabIdentation);
+	_strBuilder.AppendLine("}");
+
+	return _strBuilder.ToString();
+}
+
+public void CreateImplementableClassFile(IClass umlClass, string strProjectTargetName, string nameSpace)
+{
+	string _strClassName = umlClass.Name;
+	
+	EnvDTE.Project currentProject = this.GetSolutionProjectByName(strProjectTargetName);
+	
+	if (currentProject != null)
+	{		
+		string _projectFullPath = Path.Combine(
+			Path.GetDirectoryName(currentProject.FileName),
+			String.Format("{0}.cs", _strClassName));
+		
+		if (!File.Exists(_projectFullPath))
+		{	
+			StreamWriter writer = new StreamWriter(_projectFullPath, false);
+			
+			StringBuilder _strBuilder = new StringBuilder();
+					
+			_strBuilder.AppendLine("using System;");
+			_strBuilder.AppendLine("using System.Collections.Generic;");
+
+			foreach (string usingItem in usr_AditionalUsingsImplementableClassFile)
+			{
+				_strBuilder.AppendLine(String.Format("using {0};", usingItem));
+			}
+			
+			string _strUsings = String.Empty;
+			_strUsings = this.UMLClassModel_GetPackageUsings(String.Empty, umlClass.Package);
+			
+			if (!String.IsNullOrWhiteSpace(_strUsings))
+			{
+				_strBuilder.AppendLine();
+				_strBuilder.Append(_strUsings);
+			}
+
+			_strBuilder.AppendLine();
+			
+			_strBuilder.AppendLine(String.Format("namespace {0}", nameSpace));
+			_strBuilder.AppendLine("{");
+			_strBuilder.AppendLine();
+
+			string _strClassDeclaration = this.GetClassicClass("\t", umlClass);
+			_strBuilder.Append(_strClassDeclaration);
+			
+			_strBuilder.AppendLine();
+			_strBuilder.AppendLine("}");
+			
+			writer.Write(_strBuilder.ToString());
+			
+			writer.Close();
+		}
+		
+		currentProject.ProjectItems.AddFromFile(_projectFullPath);
+	}
+}
+
+#>

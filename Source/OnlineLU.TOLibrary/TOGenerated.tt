@@ -1,0 +1,41 @@
+﻿<#@ include file="UMLModelTemplatingUtils.tt" #>
+<#@ output extension=".cs" #>
+
+using System;
+using System.Collections.Generic;
+<#
+foreach (IPackage pkg in ModelStore.AllInstances<IPackage>())
+	{
+		string _strNamespace = String.Empty;
+		
+		_strNamespace = String.Format("{0}", pkg.Name);
+
+		string _strUsings = String.Empty;
+		_strUsings = this.UMLClassModel_GetPackageUsings(String.Empty, pkg);
+	
+		this.WriteLine(string.Empty);
+		this.WriteLine(string.Empty);
+
+		if (!String.IsNullOrWhiteSpace(_strUsings))
+		{
+			this.WriteLine(String.Empty);
+			this.WriteLine(_strUsings);
+		}
+#>
+namespace <#= _strNamespace  #>
+{
+<#
+			foreach (IClass umlClass in pkg.Members.OfType<IClass>())
+			{
+				if (!this.HasStereotype(umlClass, this.m_CSharpProfileName, "class"))
+					continue;
+				
+				string _strClassDeclaration = this.GetClassicClass("\t", umlClass);
+				
+				this.WriteLine(_strClassDeclaration);
+			}
+#>
+}
+<#
+	}
+#>

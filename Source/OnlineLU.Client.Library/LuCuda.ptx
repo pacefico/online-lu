@@ -1,0 +1,1360 @@
+	.version 1.4
+	.target sm_10, map_f64_to_f32
+	// compiled with C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\bin/../open64/lib//be.exe
+	// nvopencc 4.1 built on 2013-07-10
+
+	//-----------------------------------------------------------
+	// Compiling C:/Users/Paulo/AppData/Local/Temp/tmpxft_0000075c_00000000-12_LuCuda.cpp3.i (C:/Users/Paulo/AppData/Local/Temp/ccBI#.a06888)
+	//-----------------------------------------------------------
+
+	//-----------------------------------------------------------
+	// Options:
+	//-----------------------------------------------------------
+	//  Target:ptx, ISA:sm_10, Endian:little, Pointer Size:32
+	//  -O0	(Optimization level)
+	//  -g2	(Debug level)
+	//  -m2	(Report advisories)
+	//-----------------------------------------------------------
+
+	.file	1	"C:/Users/Paulo/AppData/Local/Temp/tmpxft_0000075c_00000000-11_LuCuda.cudafe2.gpu"
+	.file	2	"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h"
+	.file	3	"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v5.5/include\crt/device_runtime.h"
+	.file	4	"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v5.5/include\host_defines.h"
+	.file	5	"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v5.5/include\builtin_types.h"
+	.file	6	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h"
+	.file	7	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h"
+	.file	8	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h"
+	.file	9	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h"
+	.file	10	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h"
+	.file	11	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h"
+	.file	12	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h"
+	.file	13	"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v5.5/include\device_launch_parameters.h"
+	.file	14	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\crt\storage_class.h"
+	.file	15	"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\math.h"
+	.file	16	"D:/TFS/OnlineLU/Main/Source/OnlineLu.Client.Cuda/LuCuda.cu"
+	.file	17	"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v5.5/include\common_functions.h"
+	.file	18	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\math_functions.h"
+	.file	19	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\math_constants.h"
+	.file	20	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_functions.h"
+	.file	21	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_11_atomic_functions.h"
+	.file	22	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_12_atomic_functions.h"
+	.file	23	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_13_double_functions.h"
+	.file	24	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_20_atomic_functions.h"
+	.file	25	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_32_atomic_functions.h"
+	.file	26	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_35_atomic_functions.h"
+	.file	27	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_20_intrinsics.h"
+	.file	28	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_30_intrinsics.h"
+	.file	29	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_32_intrinsics.h"
+	.file	30	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_35_intrinsics.h"
+	.file	31	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_functions.h"
+	.file	32	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_fetch_functions.h"
+	.file	33	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_indirect_functions.h"
+	.file	34	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_indirect_functions.h"
+	.file	35	"c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\math_functions_dbl_ptx1.h"
+
+	.extern	.shared .align 4 .b8 ac[];
+
+	.entry lud_block_scale_v2 (
+		.param .u32 __cudaparm_lud_block_scale_v2_a,
+		.param .s32 __cudaparm_lud_block_scale_v2_M,
+		.param .s32 __cudaparm_lud_block_scale_v2_k,
+		.param .s32 __cudaparm_lud_block_scale_v2_end)
+	{
+	.reg .u32 %r<91>;
+	.reg .f32 %f<17>;
+	.reg .pred %p<5>;
+	.loc	16	33	0
+$LDWbegin_lud_block_scale_v2:
+$LDWbeginblock_241_1:
+	.loc	16	37	0
+	ld.param.s32 	%r1, [__cudaparm_lud_block_scale_v2_M];
+	mov.s32 	%r2, %r1;
+	.loc	16	38	0
+	cvt.u32.u16 	%r3, %tid.x;
+	cvt.u32.u16 	%r4, %ctaid.x;
+	cvt.u32.u16 	%r5, %ntid.x;
+	mul.lo.u32 	%r6, %r4, %r5;
+	add.u32 	%r7, %r3, %r6;
+	mov.s32 	%r8, %r7;
+	.loc	16	39	0
+	ld.param.u32 	%r9, [__cudaparm_lud_block_scale_v2_a];
+	ld.param.s32 	%r10, [__cudaparm_lud_block_scale_v2_k];
+	ld.param.s32 	%r11, [__cudaparm_lud_block_scale_v2_k];
+	mov.s32 	%r12, %r2;
+	mul.lo.s32 	%r13, %r11, %r12;
+	add.s32 	%r14, %r10, %r13;
+	cvt.u32.u16 	%r15, %tid.x;
+	add.u32 	%r16, %r14, %r15;
+	mul.lo.u32 	%r17, %r16, 4;
+	add.u32 	%r18, %r9, %r17;
+	ld.global.f32 	%f1, [%r18+0];
+	mov.u32 	%r19, ac;
+	cvt.u32.u16 	%r20, %tid.x;
+	mul.lo.u32 	%r21, %r20, 4;
+	add.u32 	%r22, %r19, %r21;
+	st.shared.f32 	[%r22+0], %f1;
+	.loc	16	42	0
+	bar.sync 	0;
+	.loc	16	45	0
+	ld.param.s32 	%r23, [__cudaparm_lud_block_scale_v2_k];
+	mov.s32 	%r24, %r8;
+	add.s32 	%r25, %r23, %r24;
+	add.s32 	%r26, %r25, 1;
+	mov.s32 	%r27, %r26;
+	.loc	16	46	0
+	ld.param.s32 	%r28, [__cudaparm_lud_block_scale_v2_M];
+	mov.s32 	%r29, %r27;
+	setp.le.s32 	%p1, %r28, %r29;
+	@%p1 bra 	$L_0_3586;
+$LDWbeginblock_241_3:
+	.loc	16	49	0
+	ld.param.u32 	%r30, [__cudaparm_lud_block_scale_v2_a];
+	ld.param.s32 	%r31, [__cudaparm_lud_block_scale_v2_k];
+	mov.s32 	%r32, %r2;
+	mov.s32 	%r33, %r27;
+	mul.lo.s32 	%r34, %r32, %r33;
+	add.s32 	%r35, %r31, %r34;
+	mul.lo.u32 	%r36, %r35, 4;
+	add.u32 	%r37, %r30, %r36;
+	ld.global.f32 	%f2, [%r37+0];
+	mov.f32 	%f3, %f2;
+	ld.shared.f32 	%f4, [ac+0];
+	mov.f32 	%f5, %f4;
+$LDWbegini_fdividef_241_9:
+	.loc	20	3985	0
+	mov.f32 	%f6, %f3;
+	mov.f32 	%f7, %f5;
+	div.full.f32 	%f8, %f6, %f7;
+$LDWendi_fdividef_241_8:
+	.loc	16	49	0
+	ld.param.u32 	%r38, [__cudaparm_lud_block_scale_v2_a];
+	ld.param.s32 	%r39, [__cudaparm_lud_block_scale_v2_k];
+	mov.s32 	%r40, %r2;
+	mov.s32 	%r41, %r27;
+	mul.lo.s32 	%r42, %r40, %r41;
+	add.s32 	%r43, %r39, %r42;
+	mul.lo.u32 	%r44, %r43, 4;
+	add.u32 	%r45, %r38, %r44;
+	st.global.f32 	[%r45+0], %f8;
+	ld.param.u32 	%r46, [__cudaparm_lud_block_scale_v2_a];
+	ld.param.s32 	%r47, [__cudaparm_lud_block_scale_v2_k];
+	mov.s32 	%r48, %r2;
+	mov.s32 	%r49, %r27;
+	mul.lo.s32 	%r50, %r48, %r49;
+	add.s32 	%r51, %r47, %r50;
+	mul.lo.u32 	%r52, %r51, 4;
+	add.u32 	%r53, %r46, %r52;
+	ld.global.f32 	%f9, [%r53+0];
+	mov.f32 	%f10, %f9;
+$LDWbeginblock_241_5:
+	.loc	16	51	0
+	mov.s32 	%r54, 1;
+	mov.s32 	%r55, %r54;
+	mov.s32 	%r56, %r55;
+	ld.param.s32 	%r57, [__cudaparm_lud_block_scale_v2_end];
+	ld.param.s32 	%r58, [__cudaparm_lud_block_scale_v2_k];
+	sub.s32 	%r59, %r57, %r58;
+	setp.ge.s32 	%p2, %r56, %r59;
+	@%p2 bra 	$L_0_4098;
+$L_0_3842:
+	.loc	16	52	0
+	ld.param.u32 	%r60, [__cudaparm_lud_block_scale_v2_a];
+	mov.s32 	%r61, %r55;
+	ld.param.s32 	%r62, [__cudaparm_lud_block_scale_v2_k];
+	mov.s32 	%r63, %r2;
+	mov.s32 	%r64, %r27;
+	mul.lo.s32 	%r65, %r63, %r64;
+	add.s32 	%r66, %r62, %r65;
+	add.s32 	%r67, %r61, %r66;
+	mul.lo.u32 	%r68, %r67, 4;
+	add.u32 	%r69, %r60, %r68;
+	ld.global.f32 	%f11, [%r69+0];
+	mov.u32 	%r70, ac;
+	mov.s32 	%r71, %r55;
+	mul.lo.u32 	%r72, %r71, 4;
+	add.u32 	%r73, %r70, %r72;
+	ld.shared.f32 	%f12, [%r73+0];
+	mov.f32 	%f13, %f10;
+	mul.f32 	%f14, %f12, %f13;
+	sub.f32 	%f15, %f11, %f14;
+	ld.param.u32 	%r74, [__cudaparm_lud_block_scale_v2_a];
+	mov.s32 	%r75, %r55;
+	ld.param.s32 	%r76, [__cudaparm_lud_block_scale_v2_k];
+	mov.s32 	%r77, %r2;
+	mov.s32 	%r78, %r27;
+	mul.lo.s32 	%r79, %r77, %r78;
+	add.s32 	%r80, %r76, %r79;
+	add.s32 	%r81, %r75, %r80;
+	mul.lo.u32 	%r82, %r81, 4;
+	add.u32 	%r83, %r74, %r82;
+	st.global.f32 	[%r83+0], %f15;
+	.loc	16	51	0
+	mov.s32 	%r84, %r55;
+	add.s32 	%r85, %r84, 1;
+	mov.s32 	%r55, %r85;
+$Lt_0_1794:
+	mov.s32 	%r86, %r55;
+	ld.param.s32 	%r87, [__cudaparm_lud_block_scale_v2_end];
+	ld.param.s32 	%r88, [__cudaparm_lud_block_scale_v2_k];
+	sub.s32 	%r89, %r87, %r88;
+	setp.lt.s32 	%p3, %r86, %r89;
+	@%p3 bra 	$L_0_3842;
+$L_0_4098:
+$LDWendblock_241_5:
+$LDWendblock_241_3:
+$L_0_3586:
+$LDWendblock_241_1:
+	.loc	16	54	0
+	exit;
+$LDWend_lud_block_scale_v2:
+	} // lud_block_scale_v2
+	.extern	.shared .align 4 .b8 y[];
+
+	.entry lud_block_triangular_solve (
+		.param .u32 __cudaparm_lud_block_triangular_solve_a,
+		.param .s32 __cudaparm_lud_block_triangular_solve_M,
+		.param .s32 __cudaparm_lud_block_triangular_solve_k,
+		.param .s32 __cudaparm_lud_block_triangular_solve_LU_BlockDim)
+	{
+	.reg .u32 %r<98>;
+	.reg .f32 %f<11>;
+	.reg .pred %p<9>;
+	.loc	16	56	0
+$LDWbegin_lud_block_triangular_solve:
+$LDWbeginblock_242_1:
+	.loc	16	60	0
+	cvt.s32.u16 	%r1, %tid.x;
+	mov.s32 	%r2, %r1;
+	.loc	16	61	0
+	mov.s32 	%r3, %r2;
+	cvt.u32.u16 	%r4, %ctaid.x;
+	cvt.u32.u16 	%r5, %ntid.x;
+	mul.lo.u32 	%r6, %r4, %r5;
+	add.u32 	%r7, %r3, %r6;
+	mov.s32 	%r8, %r7;
+	.loc	16	62	0
+	ld.param.s32 	%r9, [__cudaparm_lud_block_triangular_solve_LU_BlockDim];
+	ld.param.s32 	%r10, [__cudaparm_lud_block_triangular_solve_k];
+	mov.s32 	%r11, %r8;
+	add.s32 	%r12, %r10, %r11;
+	add.s32 	%r13, %r9, %r12;
+	mov.s32 	%r14, %r13;
+	.loc	16	64	0
+	ld.param.s32 	%r15, [__cudaparm_lud_block_triangular_solve_M];
+	mov.s32 	%r16, %r14;
+	setp.le.s32 	%p1, %r15, %r16;
+	@%p1 bra 	$L_1_5634;
+$LDWbeginblock_242_3:
+	.loc	16	67	0
+	mov.s32 	%r17, 0;
+	mov.s32 	%r18, %r17;
+	ld.param.s32 	%r19, [__cudaparm_lud_block_triangular_solve_LU_BlockDim];
+	mov.s32 	%r20, %r18;
+	setp.le.s32 	%p2, %r19, %r20;
+	@%p2 bra 	$L_1_6146;
+$L_1_5890:
+$LDWbeginblock_242_5:
+	.loc	16	69	0
+	ld.param.u32 	%r21, [__cudaparm_lud_block_triangular_solve_a];
+	mov.s32 	%r22, %r14;
+	ld.param.s32 	%r23, [__cudaparm_lud_block_triangular_solve_M];
+	ld.param.s32 	%r24, [__cudaparm_lud_block_triangular_solve_k];
+	mov.s32 	%r25, %r18;
+	add.s32 	%r26, %r24, %r25;
+	mul.lo.s32 	%r27, %r23, %r26;
+	add.s32 	%r28, %r22, %r27;
+	mul.lo.u32 	%r29, %r28, 4;
+	add.u32 	%r30, %r21, %r29;
+	ld.global.f32 	%f1, [%r30+0];
+	mov.f32 	%f2, %f1;
+$LDWbeginblock_242_7:
+	.loc	16	70	0
+	mov.s32 	%r31, 0;
+	mov.s32 	%r32, %r31;
+	mov.s32 	%r33, %r18;
+	mov.s32 	%r34, %r32;
+	setp.le.s32 	%p3, %r33, %r34;
+	@%p3 bra 	$L_1_6658;
+$L_1_6402:
+	.loc	16	71	0
+	mov.f32 	%f3, %f2;
+	ld.param.u32 	%r35, [__cudaparm_lud_block_triangular_solve_a];
+	ld.param.s32 	%r36, [__cudaparm_lud_block_triangular_solve_k];
+	mov.s32 	%r37, %r32;
+	ld.param.s32 	%r38, [__cudaparm_lud_block_triangular_solve_M];
+	ld.param.s32 	%r39, [__cudaparm_lud_block_triangular_solve_k];
+	mov.s32 	%r40, %r18;
+	add.s32 	%r41, %r39, %r40;
+	mul.lo.s32 	%r42, %r38, %r41;
+	add.s32 	%r43, %r37, %r42;
+	add.s32 	%r44, %r36, %r43;
+	mul.lo.u32 	%r45, %r44, 4;
+	add.u32 	%r46, %r35, %r45;
+	ld.global.f32 	%f4, [%r46+0];
+	mov.u32 	%r47, y;
+	mov.s32 	%r48, %r32;
+	ld.param.s32 	%r49, [__cudaparm_lud_block_triangular_solve_LU_BlockDim];
+	mov.s32 	%r50, %r2;
+	mul.lo.s32 	%r51, %r49, %r50;
+	add.s32 	%r52, %r48, %r51;
+	mul.lo.u32 	%r53, %r52, 4;
+	add.u32 	%r54, %r47, %r53;
+	ld.shared.f32 	%f5, [%r54+0];
+	mul.f32 	%f6, %f4, %f5;
+	sub.f32 	%f7, %f3, %f6;
+	mov.f32 	%f2, %f7;
+	.loc	16	70	0
+	mov.s32 	%r55, %r32;
+	add.s32 	%r56, %r55, 1;
+	mov.s32 	%r32, %r56;
+$Lt_1_2306:
+	mov.s32 	%r57, %r18;
+	mov.s32 	%r58, %r32;
+	setp.gt.s32 	%p4, %r57, %r58;
+	@%p4 bra 	$L_1_6402;
+$L_1_6658:
+$LDWendblock_242_7:
+	.loc	16	72	0
+	mov.f32 	%f8, %f2;
+	mov.u32 	%r59, y;
+	mov.s32 	%r60, %r18;
+	ld.param.s32 	%r61, [__cudaparm_lud_block_triangular_solve_LU_BlockDim];
+	mov.s32 	%r62, %r2;
+	mul.lo.s32 	%r63, %r61, %r62;
+	add.s32 	%r64, %r60, %r63;
+	mul.lo.u32 	%r65, %r64, 4;
+	add.u32 	%r66, %r59, %r65;
+	st.shared.f32 	[%r66+0], %f8;
+$LDWendblock_242_5:
+	.loc	16	67	0
+	mov.s32 	%r67, %r18;
+	add.s32 	%r68, %r67, 1;
+	mov.s32 	%r18, %r68;
+$Lt_1_2562:
+	ld.param.s32 	%r69, [__cudaparm_lud_block_triangular_solve_LU_BlockDim];
+	mov.s32 	%r70, %r18;
+	setp.gt.s32 	%p5, %r69, %r70;
+	@%p5 bra 	$L_1_5890;
+$L_1_6146:
+$LDWendblock_242_3:
+$LDWbeginblock_242_11:
+	.loc	16	76	0
+	mov.s32 	%r71, 0;
+	mov.s32 	%r72, %r71;
+	ld.param.s32 	%r73, [__cudaparm_lud_block_triangular_solve_LU_BlockDim];
+	mov.s32 	%r74, %r72;
+	setp.le.s32 	%p6, %r73, %r74;
+	@%p6 bra 	$L_1_7170;
+$L_1_6914:
+	.loc	16	77	0
+	mov.u32 	%r75, y;
+	mov.s32 	%r76, %r72;
+	ld.param.s32 	%r77, [__cudaparm_lud_block_triangular_solve_LU_BlockDim];
+	mov.s32 	%r78, %r2;
+	mul.lo.s32 	%r79, %r77, %r78;
+	add.s32 	%r80, %r76, %r79;
+	mul.lo.u32 	%r81, %r80, 4;
+	add.u32 	%r82, %r75, %r81;
+	ld.shared.f32 	%f9, [%r82+0];
+	ld.param.u32 	%r83, [__cudaparm_lud_block_triangular_solve_a];
+	mov.s32 	%r84, %r14;
+	ld.param.s32 	%r85, [__cudaparm_lud_block_triangular_solve_M];
+	ld.param.s32 	%r86, [__cudaparm_lud_block_triangular_solve_k];
+	mov.s32 	%r87, %r72;
+	add.s32 	%r88, %r86, %r87;
+	mul.lo.s32 	%r89, %r85, %r88;
+	add.s32 	%r90, %r84, %r89;
+	mul.lo.u32 	%r91, %r90, 4;
+	add.u32 	%r92, %r83, %r91;
+	st.global.f32 	[%r92+0], %f9;
+	.loc	16	76	0
+	mov.s32 	%r93, %r72;
+	add.s32 	%r94, %r93, 1;
+	mov.s32 	%r72, %r94;
+$Lt_1_3330:
+	ld.param.s32 	%r95, [__cudaparm_lud_block_triangular_solve_LU_BlockDim];
+	mov.s32 	%r96, %r72;
+	setp.gt.s32 	%p7, %r95, %r96;
+	@%p7 bra 	$L_1_6914;
+$L_1_7170:
+$LDWendblock_242_11:
+$L_1_5634:
+$LDWendblock_242_1:
+	.loc	16	79	0
+	exit;
+$LDWend_lud_block_triangular_solve:
+	} // lud_block_triangular_solve
+	.extern	.shared .align 4 .b8 shared[];
+
+	.entry lud_block_matrixMultiplication (
+		.param .u32 __cudaparm_lud_block_matrixMultiplication_a,
+		.param .s32 __cudaparm_lud_block_matrixMultiplication_M,
+		.param .s32 __cudaparm_lud_block_matrixMultiplication_k,
+		.param .s32 __cudaparm_lud_block_matrixMultiplication_maxDimThreads)
+	{
+	.reg .u32 %r<127>;
+	.reg .f32 %f<19>;
+	.reg .pred %p<7>;
+	.loc	16	81	0
+$LDWbegin_lud_block_matrixMultiplication:
+$LDWbeginblock_243_1:
+	.loc	16	86	0
+	mov.u32 	%r1, shared;
+	mov.s32 	%r2, %r1;
+	.loc	16	87	0
+	mov.u32 	%r3, shared;
+	cvt.u32.u16 	%r4, %ntid.x;
+	cvt.u32.u16 	%r5, %ntid.y;
+	mul.lo.u32 	%r6, %r4, %r5;
+	mul.lo.u32 	%r7, %r6, 4;
+	add.u32 	%r8, %r3, %r7;
+	mov.s32 	%r9, %r8;
+	.loc	16	90	0
+	cvt.u32.u16 	%r10, %tid.x;
+	cvt.u32.u16 	%r11, %ctaid.x;
+	cvt.u32.u16 	%r12, %ntid.x;
+	mul.lo.u32 	%r13, %r11, %r12;
+	add.u32 	%r14, %r10, %r13;
+	mov.s32 	%r15, %r14;
+	.loc	16	91	0
+	cvt.u32.u16 	%r16, %tid.y;
+	cvt.u32.u16 	%r17, %ctaid.y;
+	cvt.u32.u16 	%r18, %ntid.y;
+	mul.lo.u32 	%r19, %r17, %r18;
+	add.u32 	%r20, %r16, %r19;
+	mov.s32 	%r21, %r20;
+	.loc	16	93	0
+	mov.f32 	%f1, 0f00000000;     	// 0
+	mov.f32 	%f2, %f1;
+	mov.f32 	%f3, 0f00000000;     	// 0
+	mov.f32 	%f4, %f3;
+	.loc	16	96	0
+	ld.param.s32 	%r22, [__cudaparm_lud_block_matrixMultiplication_maxDimThreads];
+	mov.s32 	%r23, %r21;
+	setp.le.s32 	%p1, %r22, %r23;
+	@%p1 bra 	$L_2_4354;
+	ld.param.u32 	%r24, [__cudaparm_lud_block_matrixMultiplication_a];
+	ld.param.u32 	%r25, [__cudaparm_lud_block_matrixMultiplication_k];
+	cvt.u32.u16 	%r26, %tid.x;
+	ld.param.u32 	%r27, [__cudaparm_lud_block_matrixMultiplication_M];
+	ld.param.s32 	%r28, [__cudaparm_lud_block_matrixMultiplication_k];
+	mov.s32 	%r29, %r21;
+	add.s32 	%r30, %r28, %r29;
+	cvt.u32.u16 	%r31, %ntid.y;
+	add.u32 	%r32, %r30, %r31;
+	mul.lo.u32 	%r33, %r27, %r32;
+	add.u32 	%r34, %r26, %r33;
+	add.u32 	%r35, %r25, %r34;
+	mul.lo.u32 	%r36, %r35, 4;
+	add.u32 	%r37, %r24, %r36;
+	ld.global.f32 	%f5, [%r37+0];
+	mov.f32 	%f2, %f5;
+$L_2_4354:
+	.loc	16	99	0
+	mov.f32 	%f6, %f2;
+	mov.s32 	%r38, %r2;
+	cvt.u32.u16 	%r39, %tid.x;
+	cvt.u32.u16 	%r40, %tid.y;
+	cvt.u32.u16 	%r41, %ntid.y;
+	mul.lo.u32 	%r42, %r40, %r41;
+	add.u32 	%r43, %r39, %r42;
+	mul.lo.u32 	%r44, %r43, 4;
+	add.u32 	%r45, %r38, %r44;
+	st.shared.f32 	[%r45+0], %f6;
+	.loc	16	102	0
+	ld.param.s32 	%r46, [__cudaparm_lud_block_matrixMultiplication_maxDimThreads];
+	mov.s32 	%r47, %r15;
+	setp.le.s32 	%p2, %r46, %r47;
+	@%p2 bra 	$L_2_4610;
+	ld.param.u32 	%r48, [__cudaparm_lud_block_matrixMultiplication_a];
+	mov.s32 	%r49, %r15;
+	cvt.u32.u16 	%r50, %ntid.x;
+	ld.param.u32 	%r51, [__cudaparm_lud_block_matrixMultiplication_k];
+	ld.param.u32 	%r52, [__cudaparm_lud_block_matrixMultiplication_M];
+	ld.param.u32 	%r53, [__cudaparm_lud_block_matrixMultiplication_k];
+	cvt.u32.u16 	%r54, %tid.y;
+	add.u32 	%r55, %r53, %r54;
+	mul.lo.u32 	%r56, %r52, %r55;
+	add.u32 	%r57, %r51, %r56;
+	add.u32 	%r58, %r50, %r57;
+	add.u32 	%r59, %r49, %r58;
+	mul.lo.u32 	%r60, %r59, 4;
+	add.u32 	%r61, %r48, %r60;
+	ld.global.f32 	%f7, [%r61+0];
+	mov.f32 	%f4, %f7;
+$L_2_4610:
+	.loc	16	105	0
+	cvt.u32.u16 	%r62, %ntid.x;
+	ld.param.u32 	%r63, [__cudaparm_lud_block_matrixMultiplication_k];
+	mov.s32 	%r64, %r15;
+	ld.param.u32 	%r65, [__cudaparm_lud_block_matrixMultiplication_M];
+	ld.param.s32 	%r66, [__cudaparm_lud_block_matrixMultiplication_k];
+	mov.s32 	%r67, %r21;
+	add.s32 	%r68, %r66, %r67;
+	cvt.u32.u16 	%r69, %ntid.y;
+	add.u32 	%r70, %r68, %r69;
+	mul.lo.u32 	%r71, %r65, %r70;
+	add.u32 	%r72, %r64, %r71;
+	add.u32 	%r73, %r63, %r72;
+	add.u32 	%r74, %r62, %r73;
+	mov.s32 	%r75, %r74;
+	.loc	16	108	0
+	mov.f32 	%f8, %f4;
+	mov.s32 	%r76, %r9;
+	cvt.u32.u16 	%r77, %tid.x;
+	cvt.u32.u16 	%r78, %tid.y;
+	cvt.u32.u16 	%r79, %ntid.y;
+	mul.lo.u32 	%r80, %r78, %r79;
+	add.u32 	%r81, %r77, %r80;
+	mul.lo.u32 	%r82, %r81, 4;
+	add.u32 	%r83, %r76, %r82;
+	st.shared.f32 	[%r83+0], %f8;
+	.loc	16	111	0
+	bar.sync 	0;
+	.loc	16	113	0
+	ld.param.s32 	%r84, [__cudaparm_lud_block_matrixMultiplication_maxDimThreads];
+	mov.s32 	%r85, %r15;
+	set.gt.u32.s32 	%r86, %r84, %r85;
+	neg.s32 	%r87, %r86;
+	ld.param.s32 	%r88, [__cudaparm_lud_block_matrixMultiplication_maxDimThreads];
+	mov.s32 	%r89, %r21;
+	set.gt.u32.s32 	%r90, %r88, %r89;
+	neg.s32 	%r91, %r90;
+	and.b32 	%r92, %r87, %r91;
+	mov.u32 	%r93, 0;
+	setp.eq.s32 	%p3, %r92, %r93;
+	@%p3 bra 	$L_2_4866;
+$LDWbeginblock_243_3:
+	.loc	16	115	0
+	mov.f32 	%f9, 0f00000000;     	// 0
+	mov.f32 	%f10, %f9;
+$LDWbeginblock_243_5:
+	.loc	16	118	0
+	mov.s32 	%r94, 0;
+	mov.s32 	%r95, %r94;
+	mov.s32 	%r96, %r95;
+	cvt.u32.u16 	%r97, %ntid.x;
+	setp.ge.u32 	%p4, %r96, %r97;
+	@%p4 bra 	$L_2_5378;
+$L_2_5122:
+	.loc	16	119	0
+	mov.f32 	%f11, %f10;
+	mov.s32 	%r98, %r2;
+	mov.s32 	%r99, %r95;
+	cvt.u32.u16 	%r100, %tid.y;
+	cvt.u32.u16 	%r101, %ntid.y;
+	mul.lo.u32 	%r102, %r100, %r101;
+	add.u32 	%r103, %r99, %r102;
+	mul.lo.u32 	%r104, %r103, 4;
+	add.u32 	%r105, %r98, %r104;
+	ld.shared.f32 	%f12, [%r105+0];
+	mov.s32 	%r106, %r9;
+	cvt.u32.u16 	%r107, %tid.x;
+	mov.s32 	%r108, %r95;
+	cvt.u32.u16 	%r109, %ntid.y;
+	mul.lo.u32 	%r110, %r108, %r109;
+	add.u32 	%r111, %r107, %r110;
+	mul.lo.u32 	%r112, %r111, 4;
+	add.u32 	%r113, %r106, %r112;
+	ld.shared.f32 	%f13, [%r113+0];
+	mad.f32 	%f14, %f12, %f13, %f11;
+	mov.f32 	%f10, %f14;
+	.loc	16	118	0
+	mov.s32 	%r114, %r95;
+	add.s32 	%r115, %r114, 1;
+	mov.s32 	%r95, %r115;
+$Lt_2_1794:
+	mov.s32 	%r116, %r95;
+	cvt.u32.u16 	%r117, %ntid.x;
+	setp.lt.u32 	%p5, %r116, %r117;
+	@%p5 bra 	$L_2_5122;
+$L_2_5378:
+$LDWendblock_243_5:
+	.loc	16	123	0
+	bar.sync 	0;
+	.loc	16	126	0
+	ld.param.u32 	%r118, [__cudaparm_lud_block_matrixMultiplication_a];
+	mov.s32 	%r119, %r75;
+	mul.lo.u32 	%r120, %r119, 4;
+	add.u32 	%r121, %r118, %r120;
+	ld.global.f32 	%f15, [%r121+0];
+	mov.f32 	%f16, %f10;
+	sub.f32 	%f17, %f15, %f16;
+	ld.param.u32 	%r122, [__cudaparm_lud_block_matrixMultiplication_a];
+	mov.s32 	%r123, %r75;
+	mul.lo.u32 	%r124, %r123, 4;
+	add.u32 	%r125, %r122, %r124;
+	st.global.f32 	[%r125+0], %f17;
+$LDWendblock_243_3:
+$L_2_4866:
+$LDWendblock_243_1:
+	.loc	16	128	0
+	exit;
+$LDWend_lud_block_matrixMultiplication:
+	} // lud_block_matrixMultiplication
+
+	.entry lud_block_pivot (
+		.param .u32 __cudaparm_lud_block_pivot_out,
+		.param .u32 __cudaparm_lud_block_pivot_a,
+		.param .s32 __cudaparm_lud_block_pivot_M,
+		.param .s32 __cudaparm_lud_block_pivot_k,
+		.param .s32 __cudaparm_lud_block_pivot_max)
+	{
+	.reg .u32 %r<111>;
+	.reg .f32 %f<10>;
+	.reg .pred %p<8>;
+	.loc	16	132	0
+$LDWbegin_lud_block_pivot:
+$LDWbeginblock_244_1:
+	.loc	16	135	0
+	mov.u32 	%r1, shared;
+	mov.s32 	%r2, %r1;
+	.loc	16	136	0
+	mov.u32 	%r3, shared;
+	cvt.u32.u16 	%r4, %ntid.x;
+	mul.lo.u32 	%r5, %r4, 4;
+	add.u32 	%r6, %r3, %r5;
+	mov.s32 	%r7, %r6;
+	.loc	16	138	0
+	cvt.u32.u16 	%r8, %tid.x;
+	mov.s32 	%r9, %r8;
+	.loc	16	139	0
+	ld.param.u32 	%r10, [__cudaparm_lud_block_pivot_k];
+	mov.s32 	%r11, %r9;
+	cvt.u32.u16 	%r12, %ctaid.x;
+	cvt.u32.u16 	%r13, %ntid.x;
+	mul.lo.u32 	%r14, %r12, %r13;
+	add.u32 	%r15, %r11, %r14;
+	add.u32 	%r16, %r10, %r15;
+	mov.s32 	%r17, %r16;
+	.loc	16	141	0
+	ld.param.u32 	%r18, [__cudaparm_lud_block_pivot_M];
+	mov.s32 	%r19, %r17;
+	mul.lo.u32 	%r20, %r18, %r19;
+	mov.s32 	%r21, %r20;
+	.loc	16	144	0
+	mov.f32 	%f1, 0f00000000;     	// 0
+	mov.s32 	%r22, %r2;
+	mov.s32 	%r23, %r9;
+	mul.lo.u32 	%r24, %r23, 4;
+	add.u32 	%r25, %r22, %r24;
+	st.shared.f32 	[%r25+0], %f1;
+	.loc	16	145	0
+	mov.s32 	%r26, -1;
+	mov.s32 	%r27, %r7;
+	mov.s32 	%r28, %r9;
+	mul.lo.u32 	%r29, %r28, 4;
+	add.u32 	%r30, %r27, %r29;
+	st.shared.s32 	[%r30+0], %r26;
+	.loc	16	147	0
+	ld.param.u32 	%r31, [__cudaparm_lud_block_pivot_M];
+	mov.s32 	%r32, %r17;
+	setp.le.u32 	%p1, %r31, %r32;
+	@%p1 bra 	$L_3_4610;
+	.loc	16	150	0
+	ld.param.u32 	%r33, [__cudaparm_lud_block_pivot_a];
+	ld.param.u32 	%r34, [__cudaparm_lud_block_pivot_k];
+	mov.s32 	%r35, %r21;
+	add.u32 	%r36, %r34, %r35;
+	mul.lo.u32 	%r37, %r36, 4;
+	add.u32 	%r38, %r33, %r37;
+	ld.global.f32 	%f2, [%r38+0];
+	mov.f32 	%f3, %f2;
+$LDWbegini__Z3absf_244_7:
+	.loc	15	499	0
+	mov.f32 	%f4, %f3;
+	abs.f32 	%f5, %f4;
+$LDWendi__Z3absf_244_6:
+	.loc	16	150	0
+	mov.s32 	%r39, %r2;
+	mov.s32 	%r40, %r9;
+	mul.lo.u32 	%r41, %r40, 4;
+	add.u32 	%r42, %r39, %r41;
+	st.shared.f32 	[%r42+0], %f5;
+	.loc	16	151	0
+	mov.s32 	%r43, %r17;
+	mov.s32 	%r44, %r7;
+	mov.s32 	%r45, %r9;
+	mul.lo.u32 	%r46, %r45, 4;
+	add.u32 	%r47, %r44, %r46;
+	st.shared.s32 	[%r47+0], %r43;
+	.loc	16	154	0
+	bar.sync 	0;
+$LDWbeginblock_244_3:
+	.loc	16	157	0
+	cvt.u32.u16 	%r48, %ntid.x;
+	shr.u32 	%r49, %r48, 1;
+	mov.s32 	%r50, %r49;
+	mov.s32 	%r51, %r50;
+	mov.u32 	%r52, 0;
+	setp.eq.u32 	%p2, %r51, %r52;
+	@%p2 bra 	$L_3_5122;
+$L_3_4866:
+	.loc	16	159	0
+	ld.param.u32 	%r53, [__cudaparm_lud_block_pivot_M];
+	ld.param.u32 	%r54, [__cudaparm_lud_block_pivot_k];
+	mov.s32 	%r55, %r9;
+	mov.s32 	%r56, %r50;
+	add.u32 	%r57, %r55, %r56;
+	add.u32 	%r58, %r54, %r57;
+	set.gt.u32.u32 	%r59, %r53, %r58;
+	neg.s32 	%r60, %r59;
+	mov.s32 	%r61, %r9;
+	mov.s32 	%r62, %r50;
+	set.lt.u32.u32 	%r63, %r61, %r62;
+	neg.s32 	%r64, %r63;
+	and.b32 	%r65, %r60, %r64;
+	mov.u32 	%r66, 0;
+	setp.eq.s32 	%p3, %r65, %r66;
+	@%p3 bra 	$L_3_5378;
+	mov.s32 	%r67, %r2;
+	mov.s32 	%r68, %r9;
+	mul.lo.u32 	%r69, %r68, 4;
+	add.u32 	%r70, %r67, %r69;
+	ld.shared.f32 	%f6, [%r70+0];
+	mov.s32 	%r71, %r2;
+	mov.s32 	%r72, %r9;
+	mov.s32 	%r73, %r50;
+	add.u32 	%r74, %r72, %r73;
+	mul.lo.u32 	%r75, %r74, 4;
+	add.u32 	%r76, %r71, %r75;
+	ld.shared.f32 	%f7, [%r76+0];
+	setp.lt.f32 	%p4, %f6, %f7;
+	@!%p4 bra 	$L_3_5378;
+$L_3_5634:
+	.loc	16	161	0
+	mov.s32 	%r77, %r2;
+	mov.s32 	%r78, %r9;
+	mov.s32 	%r79, %r50;
+	add.u32 	%r80, %r78, %r79;
+	mul.lo.u32 	%r81, %r80, 4;
+	add.u32 	%r82, %r77, %r81;
+	ld.shared.f32 	%f8, [%r82+0];
+	mov.s32 	%r83, %r2;
+	mov.s32 	%r84, %r9;
+	mul.lo.u32 	%r85, %r84, 4;
+	add.u32 	%r86, %r83, %r85;
+	st.shared.f32 	[%r86+0], %f8;
+	.loc	16	162	0
+	mov.s32 	%r87, %r7;
+	mov.s32 	%r88, %r9;
+	mov.s32 	%r89, %r50;
+	add.u32 	%r90, %r88, %r89;
+	mul.lo.u32 	%r91, %r90, 4;
+	add.u32 	%r92, %r87, %r91;
+	ld.shared.s32 	%r93, [%r92+0];
+	mov.s32 	%r94, %r7;
+	mov.s32 	%r95, %r9;
+	mul.lo.u32 	%r96, %r95, 4;
+	add.u32 	%r97, %r94, %r96;
+	st.shared.s32 	[%r97+0], %r93;
+$L_3_5378:
+	.loc	16	166	0
+	bar.sync 	0;
+	.loc	16	157	0
+	mov.s32 	%r98, %r50;
+	shr.u32 	%r99, %r98, 1;
+	mov.s32 	%r50, %r99;
+$Lt_3_1282:
+	mov.s32 	%r100, %r50;
+	mov.u32 	%r101, 0;
+	setp.ne.u32 	%p5, %r100, %r101;
+	@%p5 bra 	$L_3_4866;
+$L_3_5122:
+$LDWendblock_244_3:
+	.loc	16	170	0
+	mov.s32 	%r102, %r9;
+	mov.u32 	%r103, 0;
+	setp.ne.u32 	%p6, %r102, %r103;
+	@%p6 bra 	$L_3_5890;
+	.loc	16	173	0
+	mov.s32 	%r104, %r7;
+	ld.shared.s32 	%r105, [%r104+0];
+	ld.param.u32 	%r106, [__cudaparm_lud_block_pivot_out];
+	cvt.u32.u16 	%r107, %ctaid.x;
+	mul.lo.u32 	%r108, %r107, 4;
+	add.u32 	%r109, %r106, %r108;
+	st.global.s32 	[%r109+0], %r105;
+$L_3_5890:
+$L_3_4610:
+$LDWendblock_244_1:
+	.loc	16	176	0
+	exit;
+$LDWend_lud_block_pivot:
+	} // lud_block_pivot
+
+	.entry lud_block_pivot_L2 (
+		.param .u32 __cudaparm_lud_block_pivot_L2_val,
+		.param .u32 __cudaparm_lud_block_pivot_L2_a,
+		.param .s32 __cudaparm_lud_block_pivot_L2_M,
+		.param .s32 __cudaparm_lud_block_pivot_L2_k,
+		.param .s32 __cudaparm_lud_block_pivot_L2_max)
+	{
+	.reg .u32 %r<102>;
+	.reg .f32 %f<10>;
+	.reg .pred %p<8>;
+	.loc	16	177	0
+$LDWbegin_lud_block_pivot_L2:
+$LDWbeginblock_245_1:
+	.loc	16	180	0
+	mov.u32 	%r1, shared;
+	mov.s32 	%r2, %r1;
+	.loc	16	181	0
+	mov.u32 	%r3, shared;
+	cvt.u32.u16 	%r4, %ntid.x;
+	mul.lo.u32 	%r5, %r4, 4;
+	add.u32 	%r6, %r3, %r5;
+	mov.s32 	%r7, %r6;
+	.loc	16	183	0
+	cvt.u32.u16 	%r8, %tid.x;
+	cvt.u32.u16 	%r9, %ctaid.x;
+	cvt.u32.u16 	%r10, %ntid.x;
+	mul.lo.u32 	%r11, %r9, %r10;
+	add.u32 	%r12, %r8, %r11;
+	mov.s32 	%r13, %r12;
+	.loc	16	185	0
+	cvt.u32.u16 	%r14, %tid.x;
+	mov.s32 	%r15, %r14;
+	.loc	16	186	0
+	mov.s32 	%r16, %r15;
+	cvt.u32.u16 	%r17, %ctaid.x;
+	cvt.u32.u16 	%r18, %ntid.x;
+	mul.lo.u32 	%r19, %r17, %r18;
+	add.u32 	%r20, %r16, %r19;
+	mov.s32 	%r21, %r20;
+	.loc	16	191	0
+	mov.f32 	%f1, 0f00000000;     	// 0
+	mov.s32 	%r22, %r2;
+	mov.s32 	%r23, %r15;
+	mul.lo.u32 	%r24, %r23, 4;
+	add.u32 	%r25, %r22, %r24;
+	st.shared.f32 	[%r25+0], %f1;
+	.loc	16	193	0
+	ld.param.u32 	%r26, [__cudaparm_lud_block_pivot_L2_max];
+	mov.s32 	%r27, %r13;
+	setp.le.u32 	%p1, %r26, %r27;
+	@%p1 bra 	$L_4_4866;
+$LDWbeginblock_245_3:
+	.loc	16	196	0
+	ld.param.u32 	%r28, [__cudaparm_lud_block_pivot_L2_val];
+	mov.s32 	%r29, %r21;
+	mul.lo.u32 	%r30, %r29, 4;
+	add.u32 	%r31, %r28, %r30;
+	ld.global.s32 	%r32, [%r31+0];
+	mov.s32 	%r33, %r32;
+	.loc	16	197	0
+	ld.param.u32 	%r34, [__cudaparm_lud_block_pivot_L2_a];
+	ld.param.s32 	%r35, [__cudaparm_lud_block_pivot_L2_k];
+	ld.param.s32 	%r36, [__cudaparm_lud_block_pivot_L2_M];
+	mov.s32 	%r37, %r33;
+	mul.lo.s32 	%r38, %r36, %r37;
+	add.s32 	%r39, %r35, %r38;
+	mul.lo.u32 	%r40, %r39, 4;
+	add.u32 	%r41, %r34, %r40;
+	ld.global.f32 	%f2, [%r41+0];
+	mov.f32 	%f3, %f2;
+$LDWbegini__Z3absf_245_9:
+	.loc	15	499	0
+	mov.f32 	%f4, %f3;
+	abs.f32 	%f5, %f4;
+$LDWendi__Z3absf_245_8:
+	.loc	16	197	0
+	mov.s32 	%r42, %r2;
+	mov.s32 	%r43, %r15;
+	mul.lo.u32 	%r44, %r43, 4;
+	add.u32 	%r45, %r42, %r44;
+	st.shared.f32 	[%r45+0], %f5;
+	.loc	16	198	0
+	mov.s32 	%r46, %r33;
+	mov.s32 	%r47, %r7;
+	mov.s32 	%r48, %r15;
+	mul.lo.u32 	%r49, %r48, 4;
+	add.u32 	%r50, %r47, %r49;
+	st.shared.s32 	[%r50+0], %r46;
+	.loc	16	201	0
+	bar.sync 	0;
+$LDWbeginblock_245_5:
+	.loc	16	204	0
+	cvt.u32.u16 	%r51, %ntid.x;
+	shr.u32 	%r52, %r51, 1;
+	mov.s32 	%r53, %r52;
+	mov.s32 	%r54, %r53;
+	mov.u32 	%r55, 0;
+	setp.eq.u32 	%p2, %r54, %r55;
+	@%p2 bra 	$L_4_5378;
+$L_4_5122:
+	.loc	16	206	0
+	mov.s32 	%r56, %r15;
+	mov.s32 	%r57, %r53;
+	setp.ge.u32 	%p3, %r56, %r57;
+	@%p3 bra 	$L_4_5634;
+	mov.s32 	%r58, %r2;
+	mov.s32 	%r59, %r15;
+	mul.lo.u32 	%r60, %r59, 4;
+	add.u32 	%r61, %r58, %r60;
+	ld.shared.f32 	%f6, [%r61+0];
+	mov.s32 	%r62, %r2;
+	mov.s32 	%r63, %r15;
+	mov.s32 	%r64, %r53;
+	add.u32 	%r65, %r63, %r64;
+	mul.lo.u32 	%r66, %r65, 4;
+	add.u32 	%r67, %r62, %r66;
+	ld.shared.f32 	%f7, [%r67+0];
+	setp.lt.f32 	%p4, %f6, %f7;
+	@!%p4 bra 	$L_4_5634;
+$L_4_5890:
+	.loc	16	208	0
+	mov.s32 	%r68, %r2;
+	mov.s32 	%r69, %r15;
+	mov.s32 	%r70, %r53;
+	add.u32 	%r71, %r69, %r70;
+	mul.lo.u32 	%r72, %r71, 4;
+	add.u32 	%r73, %r68, %r72;
+	ld.shared.f32 	%f8, [%r73+0];
+	mov.s32 	%r74, %r2;
+	mov.s32 	%r75, %r15;
+	mul.lo.u32 	%r76, %r75, 4;
+	add.u32 	%r77, %r74, %r76;
+	st.shared.f32 	[%r77+0], %f8;
+	.loc	16	209	0
+	mov.s32 	%r78, %r7;
+	mov.s32 	%r79, %r15;
+	mov.s32 	%r80, %r53;
+	add.u32 	%r81, %r79, %r80;
+	mul.lo.u32 	%r82, %r81, 4;
+	add.u32 	%r83, %r78, %r82;
+	ld.shared.s32 	%r84, [%r83+0];
+	mov.s32 	%r85, %r7;
+	mov.s32 	%r86, %r15;
+	mul.lo.u32 	%r87, %r86, 4;
+	add.u32 	%r88, %r85, %r87;
+	st.shared.s32 	[%r88+0], %r84;
+$L_4_5634:
+	.loc	16	213	0
+	bar.sync 	0;
+	.loc	16	204	0
+	mov.s32 	%r89, %r53;
+	shr.u32 	%r90, %r89, 1;
+	mov.s32 	%r53, %r90;
+$Lt_4_1794:
+	mov.s32 	%r91, %r53;
+	mov.u32 	%r92, 0;
+	setp.ne.u32 	%p5, %r91, %r92;
+	@%p5 bra 	$L_4_5122;
+$L_4_5378:
+$LDWendblock_245_5:
+	.loc	16	217	0
+	mov.s32 	%r93, %r15;
+	mov.u32 	%r94, 0;
+	setp.ne.u32 	%p6, %r93, %r94;
+	@%p6 bra 	$L_4_6146;
+	.loc	16	220	0
+	mov.s32 	%r95, %r7;
+	ld.shared.s32 	%r96, [%r95+0];
+	ld.param.u32 	%r97, [__cudaparm_lud_block_pivot_L2_val];
+	cvt.u32.u16 	%r98, %ctaid.x;
+	mul.lo.u32 	%r99, %r98, 4;
+	add.u32 	%r100, %r97, %r99;
+	st.global.s32 	[%r100+0], %r96;
+$L_4_6146:
+$LDWendblock_245_3:
+$L_4_4866:
+$LDWendblock_245_1:
+	.loc	16	223	0
+	exit;
+$LDWend_lud_block_pivot_L2:
+	} // lud_block_pivot_L2
+
+	.entry lud_block_swap_v2 (
+		.param .u32 __cudaparm_lud_block_swap_v2_a,
+		.param .s32 __cudaparm_lud_block_swap_v2_M,
+		.param .s32 __cudaparm_lud_block_swap_v2_r1,
+		.param .s32 __cudaparm_lud_block_swap_v2_r2)
+	{
+	.reg .u32 %r<42>;
+	.reg .f32 %f<6>;
+	.reg .pred %p<3>;
+	.loc	16	225	0
+$LDWbegin_lud_block_swap_v2:
+$LDWbeginblock_246_1:
+	.loc	16	227	0
+	cvt.u32.u16 	%r1, %tid.x;
+	cvt.u32.u16 	%r2, %ctaid.x;
+	cvt.u32.u16 	%r3, %ntid.x;
+	mul.lo.u32 	%r4, %r2, %r3;
+	add.u32 	%r5, %r1, %r4;
+	mov.s32 	%r6, %r5;
+	.loc	16	229	0
+	ld.param.s32 	%r7, [__cudaparm_lud_block_swap_v2_M];
+	mov.s32 	%r8, %r6;
+	setp.le.s32 	%p1, %r7, %r8;
+	@%p1 bra 	$L_5_1794;
+$LDWbeginblock_246_3:
+	.loc	16	231	0
+	ld.param.u32 	%r9, [__cudaparm_lud_block_swap_v2_a];
+	mov.s32 	%r10, %r6;
+	ld.param.s32 	%r11, [__cudaparm_lud_block_swap_v2_M];
+	ld.param.s32 	%r12, [__cudaparm_lud_block_swap_v2_r1];
+	mul.lo.s32 	%r13, %r11, %r12;
+	add.s32 	%r14, %r10, %r13;
+	mul.lo.u32 	%r15, %r14, 4;
+	add.u32 	%r16, %r9, %r15;
+	ld.global.f32 	%f1, [%r16+0];
+	mov.f32 	%f2, %f1;
+	.loc	16	232	0
+	ld.param.u32 	%r17, [__cudaparm_lud_block_swap_v2_a];
+	mov.s32 	%r18, %r6;
+	ld.param.s32 	%r19, [__cudaparm_lud_block_swap_v2_M];
+	ld.param.s32 	%r20, [__cudaparm_lud_block_swap_v2_r2];
+	mul.lo.s32 	%r21, %r19, %r20;
+	add.s32 	%r22, %r18, %r21;
+	mul.lo.u32 	%r23, %r22, 4;
+	add.u32 	%r24, %r17, %r23;
+	ld.global.f32 	%f3, [%r24+0];
+	ld.param.u32 	%r25, [__cudaparm_lud_block_swap_v2_a];
+	mov.s32 	%r26, %r6;
+	ld.param.s32 	%r27, [__cudaparm_lud_block_swap_v2_M];
+	ld.param.s32 	%r28, [__cudaparm_lud_block_swap_v2_r1];
+	mul.lo.s32 	%r29, %r27, %r28;
+	add.s32 	%r30, %r26, %r29;
+	mul.lo.u32 	%r31, %r30, 4;
+	add.u32 	%r32, %r25, %r31;
+	st.global.f32 	[%r32+0], %f3;
+	.loc	16	233	0
+	mov.f32 	%f4, %f2;
+	ld.param.u32 	%r33, [__cudaparm_lud_block_swap_v2_a];
+	mov.s32 	%r34, %r6;
+	ld.param.s32 	%r35, [__cudaparm_lud_block_swap_v2_M];
+	ld.param.s32 	%r36, [__cudaparm_lud_block_swap_v2_r2];
+	mul.lo.s32 	%r37, %r35, %r36;
+	add.s32 	%r38, %r34, %r37;
+	mul.lo.u32 	%r39, %r38, 4;
+	add.u32 	%r40, %r33, %r39;
+	st.global.f32 	[%r40+0], %f4;
+$LDWendblock_246_3:
+$L_5_1794:
+$LDWendblock_246_1:
+	.loc	16	235	0
+	exit;
+$LDWend_lud_block_swap_v2:
+	} // lud_block_swap_v2
+
+ 	@@DWARF .section .debug_info, "",@progbits
+	@@DWARF .byte	0x88, 0x09, 0x00, 0x00, 0x02, 0x00
+	@@DWARF .4byte	.debug_abbrev
+	@@DWARF .4byte	0x3a430104, 0x6573552f, 0x502f7372, 0x6f6c7561
+	@@DWARF .4byte	0x7070412f, 0x61746144, 0x636f4c2f, 0x542f6c61
+	@@DWARF .4byte	0x2f706d65, 0x78706d74, 0x305f7466, 0x30303030
+	@@DWARF .4byte	0x5f633537, 0x30303030, 0x30303030, 0x5f32312d
+	@@DWARF .4byte	0x7543754c, 0x632e6164, 0x2e337070, 0x3a440069
+	@@DWARF .4byte	0x5346545c, 0x6c6e4f5c, 0x4c656e69, 0x614d5c55
+	@@DWARF .4byte	0x535c6e69, 0x6372756f, 0x6e4f5c65, 0x656e696c
+	@@DWARF .4byte	0x432e754c, 0x6e65696c, 0x75432e74, 0x6f006164
+	@@DWARF .byte	0x70, 0x65, 0x6e, 0x63, 0x63, 0x20, 0x34, 0x2e
+	@@DWARF .byte	0x31, 0x00, 0x04, 0x00
+	@@DWARF .4byte	.debug_line
+	@@DWARF .4byte	0x736e7502, 0x656e6769, 0x6e692064, 0x04070074
+	@@DWARF .4byte	0x75bd0b03, 0x33746e69, 0x00e00c00, 0x0b040000
+	@@DWARF .4byte	0x9a0078be, 0x02000000, 0x04010023, 0x0079be0b
+	@@DWARF .4byte	0x0000009a, 0x01042302, 0x7abe0b04, 0x00009a00
+	@@DWARF .4byte	0x08230200, 0x0b050001, 0x6975017d, 0x0033746e
+	@@DWARF .4byte	0x000000aa, 0x0000e006, 0xa00b0700, 0x6d696401
+	@@DWARF .4byte	0x2c0c0033, 0x08000001, 0x7801a10b, 0x00009a00
+	@@DWARF .4byte	0x00230200, 0xa10b0801, 0x9a007901, 0x02000000
+	@@DWARF .4byte	0x08010423, 0x7a01a10b, 0x00009a00, 0x08230200
+	@@DWARF .4byte	0x0b050001, 0x696401a9, 0xf300336d, 0x06000000
+	@@DWARF .4byte	0x0000012c, 0x746e6902, 0x06040500, 0x0000013e
+	@@DWARF .4byte	0x6f6c6602, 0x04007461, 0x014a0904, 0x0a010000
+	@@DWARF .4byte	0x63612310, 0x00015300, 0x09010800, 0x0000014a
+	@@DWARF .4byte	0x3a100a01, 0x01650079, 0x01080000, 0x00014a09
+	@@DWARF .4byte	0x100a0100, 0x61687354, 0x00646572, 0x00000176
+	@@DWARF .4byte	0x4a0b0108, 0x04000001, 0x6f640205, 0x656c6275
+	@@DWARF .4byte	0x02080400, 0x676e6f6c, 0x6e6f6c20, 0x6e752067
+	@@DWARF .4byte	0x6e676973, 0x69206465, 0x0700746e, 0x6f6c0208
+	@@DWARF .4byte	0x6c20676e, 0x20676e6f, 0x00746e69, 0x6c020805
+	@@DWARF .4byte	0x20676e6f, 0x00746e69, 0x63020405, 0x00726168
+	@@DWARF .4byte	0xd4060106, 0x0b000001, 0x000001dc, 0x0b070504
+	@@DWARF .4byte	0x6c660110, 0x3274616f, 0x02150800, 0x0b080000
+	@@DWARF .4byte	0x00780110, 0x0000014a, 0x01002302, 0x01100b08
+	@@DWARF .4byte	0x014a0079, 0x23020000, 0x05000104, 0x6601890b
+	@@DWARF .4byte	0x74616f6c, 0x01e80032, 0x9a0c0000, 0x01000000
+	@@DWARF .4byte	0x00000231, 0x0e00050d, 0x5f23d512, 0x6475635f
+	@@DWARF .4byte	0x5f747261, 0x706f3269, 0x00665f69, 0x00000224
+	@@DWARF .4byte	0x75b50b03, 0x32746e69, 0x02730800, 0x0b040000
+	@@DWARF .4byte	0x9a0078b5, 0x02000000, 0x04010023, 0x0079b50b
+	@@DWARF .4byte	0x0000009a, 0x01042302, 0x7b0b0500, 0x6e697501
+	@@DWARF .4byte	0x4a003274, 0x0b000002, 0x0000013e, 0x9a0c0504
+	@@DWARF .4byte	0x01000000, 0x00000295, 0x0f00060d, 0x0000014a
+	@@DWARF .4byte	0x00014a06, 0x01930b00, 0x05040000, 0x6c211010
+	@@DWARF .4byte	0x625f6475, 0x6b636f6c, 0x6163735f, 0x765f656c
+	@@DWARF .byte	0x32, 0x00, 0x01, 0x01, 0x01, 0x00
+	@@DWARF .4byte	$LDWbegin_lud_block_scale_v2
+	@@DWARF .4byte	$LDWend_lud_block_scale_v2
+	@@DWARF .byte	0xc1, 0x03, 0x00, 0x00, 0x11, 0x10, 0x21, 0x61
+	@@DWARF .byte	0x00, 0x8c, 0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_scale_v2_a
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x21, 0x4d, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_scale_v2_M
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x21, 0x6b, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_scale_v2_k
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x21, 0x65, 0x6e, 0x64, 0x00
+	@@DWARF .byte	0x3e, 0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_scale_v2_end
+	@@DWARF .byte	0x07, 0x12
+	@@DWARF .4byte	$LDWbeginblock_241_1
+	@@DWARF .4byte	$LDWendblock_241_1
+	@@DWARF .4byte	0x61251013, 0x74646957, 0x013e0068, 0x90050000
+	@@DWARF .4byte	0x0195e4b2, 0x26101302, 0x00646974, 0x0000013e
+	@@DWARF .4byte	0xe4b89005, 0x13020195, 0x00692d10, 0x0000013e
+	@@DWARF .byte	0x06, 0x90, 0xb7, 0xe4, 0xc8, 0xab, 0x02, 0x02
+	@@DWARF .byte	0x12
+	@@DWARF .4byte	$LDWbeginblock_241_3
+	@@DWARF .4byte	$LDWendblock_241_3
+	@@DWARF .4byte	0x72311013, 0x4a006b69, 0x06000001, 0x98e2b090
+	@@DWARF .byte	0xab, 0x02, 0x02, 0x12
+	@@DWARF .4byte	$LDWbeginblock_241_5
+	@@DWARF .4byte	$LDWendblock_241_5
+	@@DWARF .4byte	0x63331013, 0x00013e00, 0xb5900600, 0x02abc8ea
+	@@DWARF .byte	0x02, 0x00, 0x00, 0x00, 0x14
+	@@DWARF .4byte	$LDWbegini_fdividef_241_9
+	@@DWARF .4byte	$LDWendi_fdividef_241_8
+	@@DWARF .4byte	0x00000940, 0x0f8d1415, 0x014a0061, 0x90050000
+	@@DWARF .4byte	0x0195ccb3, 0x00095702, 0x8d141500, 0x4a00620f
+	@@DWARF .4byte	0x05000001, 0x95ccb590, 0x09610201, 0x00000000
+	@@DWARF .4byte	0x6c381016, 0x625f6475, 0x6b636f6c, 0x6972745f
+	@@DWARF .4byte	0x75676e61, 0x5f72616c, 0x766c6f73, 0x01010065
+	@@DWARF .byte	0x00
+	@@DWARF .4byte	$LDWbegin_lud_block_triangular_solve
+	@@DWARF .4byte	$LDWend_lud_block_triangular_solve
+	@@DWARF .byte	0xe9, 0x04, 0x00, 0x00, 0x11, 0x10, 0x38, 0x61
+	@@DWARF .byte	0x00, 0x8c, 0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_triangular_solve_a
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x38, 0x4d, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_triangular_solve_M
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x38, 0x6b, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_triangular_solve_k
+	@@DWARF .4byte	0x38101107, 0x425f554c, 0x6b636f6c, 0x006d6944
+	@@DWARF .byte	0x3e, 0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_triangular_solve_LU_BlockDim
+	@@DWARF .byte	0x07, 0x12
+	@@DWARF .4byte	$LDWbeginblock_242_1
+	@@DWARF .4byte	$LDWendblock_242_1
+	@@DWARF .4byte	0x743c1013, 0x013e0078, 0x90050000, 0x0195e4b2
+	@@DWARF .4byte	0x3d101302, 0x00646974, 0x0000013e, 0xe4b89005
+	@@DWARF .4byte	0x13020195, 0x6f633e10, 0x6e6d756c, 0x00013e00
+	@@DWARF .byte	0x00, 0x06, 0x90, 0xb4, 0xe2, 0xc8, 0xab, 0x02
+	@@DWARF .byte	0x02, 0x12
+	@@DWARF .4byte	$LDWbeginblock_242_3
+	@@DWARF .4byte	$LDWendblock_242_3
+	@@DWARF .4byte	0x72431013, 0x00013e00, 0xb8900600, 0x02abc8e2
+	@@DWARF .byte	0x02, 0x12
+	@@DWARF .4byte	$LDWbeginblock_242_5
+	@@DWARF .4byte	$LDWendblock_242_5
+	@@DWARF .4byte	0x72451013, 0x4a007365, 0x05000001, 0x95ccb290
+	@@DWARF .byte	0x01, 0x02, 0x12
+	@@DWARF .4byte	$LDWbeginblock_242_7
+	@@DWARF .4byte	$LDWendblock_242_7
+	@@DWARF .4byte	0x63461013, 0x00013e00, 0xb2900600, 0x02abc8e6
+	@@DWARF .byte	0x02, 0x00, 0x00, 0x00, 0x12
+	@@DWARF .4byte	$LDWbeginblock_242_11
+	@@DWARF .4byte	$LDWendblock_242_11
+	@@DWARF .4byte	0x724c1013, 0x00013e00, 0xb2900600, 0x02abc8ee
+	@@DWARF .4byte	0x00000002, 0x6c511016, 0x625f6475, 0x6b636f6c
+	@@DWARF .4byte	0x74616d5f, 0x4d786972, 0x69746c75, 0x63696c70
+	@@DWARF .byte	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x00, 0x01, 0x01
+	@@DWARF .byte	0x00
+	@@DWARF .4byte	$LDWbegin_lud_block_matrixMultiplication
+	@@DWARF .4byte	$LDWend_lud_block_matrixMultiplication
+	@@DWARF .byte	0x29, 0x06, 0x00, 0x00, 0x11, 0x10, 0x51, 0x61
+	@@DWARF .byte	0x00, 0x8c, 0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_matrixMultiplication_a
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x51, 0x4d, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_matrixMultiplication_M
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x51, 0x6b, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_matrixMultiplication_k
+	@@DWARF .4byte	0x51101107, 0x4478616d, 0x68546d69, 0x64616572
+	@@DWARF .byte	0x73, 0x00, 0x3e, 0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_matrixMultiplication_maxDimThreads
+	@@DWARF .byte	0x07, 0x12
+	@@DWARF .4byte	$LDWbeginblock_243_1
+	@@DWARF .4byte	$LDWendblock_243_1
+	@@DWARF .4byte	0x61561013, 0x018c0063, 0x90050000, 0x0195e4b2
+	@@DWARF .4byte	0x57101302, 0x8c006362, 0x05000001, 0x95e4b990
+	@@DWARF .4byte	0x10130201, 0x6978745a, 0x013e0064, 0x90060000
+	@@DWARF .4byte	0xabc8e2b5, 0x10130202, 0x6979745b, 0x013e0064
+	@@DWARF .4byte	0x90060000, 0xabc8e4b1, 0x10130202, 0x0076615d
+	@@DWARF .4byte	0x0000014a, 0xccb29005, 0x13020195, 0x76625d10
+	@@DWARF .4byte	0x00014a00, 0xb4900500, 0x020195cc, 0x63691013
+	@@DWARF .4byte	0x00786469, 0x0000013e, 0xeeb59006, 0x0202abc8
+	@@DWARF .byte	0x12
+	@@DWARF .4byte	$LDWbeginblock_243_3
+	@@DWARF .4byte	$LDWendblock_243_3
+	@@DWARF .4byte	0x73731013, 0x4a006d75, 0x06000001, 0x98e2b090
+	@@DWARF .byte	0xab, 0x02, 0x02, 0x12
+	@@DWARF .4byte	$LDWbeginblock_243_5
+	@@DWARF .4byte	$LDWendblock_243_5
+	@@DWARF .4byte	0x69761013, 0x00013e00, 0xb5900600, 0x02abc8f2
+	@@DWARF .4byte	0x00000002, 0x84101000, 0x5f64756c, 0x636f6c62
+	@@DWARF .byte	0x6b, 0x5f, 0x70, 0x69, 0x76, 0x6f, 0x74, 0x00
+	@@DWARF .byte	0x01, 0x01, 0x01, 0x00
+	@@DWARF .4byte	$LDWbegin_lud_block_pivot
+	@@DWARF .4byte	$LDWend_lud_block_pivot
+	@@DWARF .4byte	0x00000754, 0x6f841011, 0x81007475, 0x05000002
+	@@DWARF .byte	0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_out
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x84, 0x61, 0x00, 0x8c, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_a
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x84, 0x4d, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_M
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x84, 0x6b, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_k
+	@@DWARF .byte	0x07, 0x11, 0x10, 0x84, 0x6d, 0x61, 0x78, 0x00
+	@@DWARF .byte	0x3e, 0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_max
+	@@DWARF .byte	0x07, 0x12
+	@@DWARF .4byte	$LDWbeginblock_244_1
+	@@DWARF .4byte	$LDWendblock_244_1
+	@@DWARF .4byte	0x6d871013, 0x635f7861, 0x65686361, 0x00018c00
+	@@DWARF .4byte	0xb2900500, 0x020195e4, 0x69881013, 0x635f7864
+	@@DWARF .4byte	0x65686361, 0x00028100, 0xb7900500, 0x020195e4
+	@@DWARF .4byte	0x748a1013, 0x009a0078, 0x90050000, 0x0195e4b9
+	@@DWARF .4byte	0x8b101302, 0x009a0069, 0x90060000, 0xabc8e2b7
+	@@DWARF .4byte	0x10130202, 0x7864698d, 0x00009a00, 0xb1900600
+	@@DWARF .byte	0xe4, 0xc8, 0xab, 0x02, 0x02, 0x12
+	@@DWARF .4byte	$LDWbeginblock_244_3
+	@@DWARF .4byte	$LDWendblock_244_3
+	@@DWARF .4byte	0x739d1013, 0x64697274, 0x009a0065, 0x90060000
+	@@DWARF .byte	0xb0, 0xea, 0xc8, 0xab, 0x02, 0x02, 0x00, 0x00
+	@@DWARF .byte	0x14
+	@@DWARF .4byte	$LDWbegini__Z3absf_244_7
+	@@DWARF .4byte	$LDWendi__Z3absf_244_6
+	@@DWARF .4byte	0x0000096c, 0x01f20f15, 0x4a00585f, 0x05000001
+	@@DWARF .4byte	0x95ccb390, 0x097e0201, 0x00000000, 0x6cb11010
+	@@DWARF .4byte	0x625f6475, 0x6b636f6c, 0x7669705f, 0x4c5f746f
+	@@DWARF .byte	0x32, 0x00, 0x01, 0x01, 0x01, 0x00
+	@@DWARF .4byte	$LDWbegin_lud_block_pivot_L2
+	@@DWARF .4byte	$LDWend_lud_block_pivot_L2
+	@@DWARF .4byte	0x0000089e, 0x76b11011, 0x81006c61, 0x05000002
+	@@DWARF .byte	0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_L2_val
+	@@DWARF .byte	0x07, 0x11, 0x10, 0xb1, 0x61, 0x00, 0x8c, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_L2_a
+	@@DWARF .byte	0x07, 0x11, 0x10, 0xb1, 0x4d, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_L2_M
+	@@DWARF .byte	0x07, 0x11, 0x10, 0xb1, 0x6b, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_L2_k
+	@@DWARF .byte	0x07, 0x11, 0x10, 0xb1, 0x6d, 0x61, 0x78, 0x00
+	@@DWARF .byte	0x3e, 0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_pivot_L2_max
+	@@DWARF .byte	0x07, 0x12
+	@@DWARF .4byte	$LDWbeginblock_245_1
+	@@DWARF .4byte	$LDWendblock_245_1
+	@@DWARF .4byte	0x6db41013, 0x635f7861, 0x65686361, 0x00018c00
+	@@DWARF .4byte	0xb2900500, 0x020195e4, 0x69b51013, 0x635f7864
+	@@DWARF .4byte	0x65686361, 0x00028100, 0xb7900500, 0x020195e4
+	@@DWARF .4byte	0x74b71013, 0x9a006469, 0x06000000, 0xc8e2b390
+	@@DWARF .4byte	0x130202ab, 0x7874b910, 0x00009a00, 0xb5900600
+	@@DWARF .4byte	0x02abc8e2, 0xba101302, 0x009a0069, 0x90060000
+	@@DWARF .byte	0xb1, 0xe4, 0xc8, 0xab, 0x02, 0x02, 0x12
+	@@DWARF .4byte	$LDWbeginblock_245_3
+	@@DWARF .4byte	$LDWendblock_245_3
+	@@DWARF .4byte	0x76c41013, 0x00013e00, 0xb3900600, 0x02abc8e6
+	@@DWARF .byte	0x02, 0x12
+	@@DWARF .4byte	$LDWbeginblock_245_5
+	@@DWARF .4byte	$LDWendblock_245_5
+	@@DWARF .4byte	0x73cc1013, 0x64697274, 0x009a0065, 0x90060000
+	@@DWARF .byte	0xb3, 0xea, 0xc8, 0xab, 0x02, 0x02, 0x00, 0x00
+	@@DWARF .byte	0x00, 0x14
+	@@DWARF .4byte	$LDWbegini__Z3absf_245_9
+	@@DWARF .4byte	$LDWendi__Z3absf_245_8
+	@@DWARF .4byte	0x0000096c, 0x01f20f15, 0x4a00585f, 0x05000001
+	@@DWARF .4byte	0x95ccb390, 0x097e0201, 0x00000000, 0x6ce11016
+	@@DWARF .4byte	0x625f6475, 0x6b636f6c, 0x6177735f, 0x32765f70
+	@@DWARF .byte	0x00, 0x01, 0x01, 0x00
+	@@DWARF .4byte	$LDWbegin_lud_block_swap_v2
+	@@DWARF .4byte	$LDWend_lud_block_swap_v2
+	@@DWARF .byte	0x40, 0x09, 0x00, 0x00, 0x11, 0x10, 0xe1, 0x61
+	@@DWARF .byte	0x00, 0x8c, 0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_swap_v2_a
+	@@DWARF .byte	0x07, 0x11, 0x10, 0xe1, 0x4d, 0x00, 0x3e, 0x01
+	@@DWARF .byte	0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_swap_v2_M
+	@@DWARF .byte	0x07, 0x11, 0x10, 0xe1, 0x72, 0x31, 0x00, 0x3e
+	@@DWARF .byte	0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_swap_v2_r1
+	@@DWARF .byte	0x07, 0x11, 0x10, 0xe1, 0x72, 0x32, 0x00, 0x3e
+	@@DWARF .byte	0x01, 0x00, 0x00, 0x05, 0x03
+	@@DWARF .4byte	__cudaparm_lud_block_swap_v2_r2
+	@@DWARF .byte	0x07, 0x12
+	@@DWARF .4byte	$LDWbeginblock_246_1
+	@@DWARF .4byte	$LDWendblock_246_1
+	@@DWARF .4byte	0x63e31013, 0x6d756c6f, 0x013e006e, 0x90050000
+	@@DWARF .byte	0xb6, 0xe4, 0x95, 0x01, 0x02, 0x12
+	@@DWARF .4byte	$LDWbeginblock_246_3
+	@@DWARF .4byte	$LDWendblock_246_3
+	@@DWARF .4byte	0x74e71013, 0x4a00706d, 0x05000001, 0x95ccb290
+	@@DWARF .4byte	0x00000201, 0x8d141700, 0x6964660f, 0x65646976
+	@@DWARF .4byte	0x014a0066, 0x01010000, 0x0000096c, 0x0f8d1418
+	@@DWARF .4byte	0x014a0061, 0x14180000, 0x00620f8d, 0x0000014a
+	@@DWARF .4byte	0xf20f1900, 0x335a5f01, 0x66736261, 0x00014a00
+	@@DWARF .4byte	0x18010100, 0x5f01f20f, 0x014a0058, 0x00000000
+	@@DWARF .byte	0x00
+
+ 	@@DWARF .section .debug_pubnames, "",@progbits
+	@@DWARF .byte	0xc0, 0x00, 0x00, 0x00, 0x02, 0x00
+	@@DWARF .4byte	.debug_info
+	@@DWARF .4byte	0x0000098c, 0x00000159, 0x6b006361, 0x79000001
+	@@DWARF .4byte	0x00017c00, 0x61687300, 0x00646572, 0x000002a6
+	@@DWARF .4byte	0x5f64756c, 0x636f6c62, 0x63735f6b, 0x5f656c61
+	@@DWARF .4byte	0xc1003276, 0x6c000003, 0x625f6475, 0x6b636f6c
+	@@DWARF .4byte	0x6972745f, 0x75676e61, 0x5f72616c, 0x766c6f73
+	@@DWARF .4byte	0x04e90065, 0x756c0000, 0x6c625f64, 0x5f6b636f
+	@@DWARF .4byte	0x7274616d, 0x754d7869, 0x7069746c, 0x6163696c
+	@@DWARF .4byte	0x6e6f6974, 0x00062900, 0x64756c00, 0x6f6c625f
+	@@DWARF .4byte	0x705f6b63, 0x746f7669, 0x00075400, 0x64756c00
+	@@DWARF .4byte	0x6f6c625f, 0x705f6b63, 0x746f7669, 0x00324c5f
+	@@DWARF .4byte	0x0000089e, 0x5f64756c, 0x636f6c62, 0x77735f6b
+	@@DWARF .byte	0x61, 0x70, 0x5f, 0x76, 0x32, 0x00, 0x00, 0x00
+	@@DWARF .byte	0x00, 0x00
+
+ 	@@DWARF .section .debug_line, "",@progbits
+	@@DWARF .4byte	0x0000001c, 0x00100002, 0x00040000, 0x000a04ff
+	@@DWARF .4byte	0x01010101, 0x01000000, 0xa2020000, 0x01010005
+
+ 	@@DWARF .section .debug_abbrev, "",@progbits
+	@@DWARF .4byte	0x03011101, 0x25081b08, 0x420b1308, 0x0006100b
+	@@DWARF .4byte	0x00240200, 0x0b3e0803, 0x00000b0b, 0x3a011303
+	@@DWARF .4byte	0x030b3b0b, 0x010b0b08, 0x04000013, 0x0b3a000d
+	@@DWARF .4byte	0x08030b3b, 0x0a381349, 0x00000b32, 0x3a001605
+	@@DWARF .4byte	0x03053b0b, 0x00134908, 0x00260600, 0x00001349
+	@@DWARF .4byte	0x3a011307, 0x03053b0b, 0x010b0b08, 0x08000013
+	@@DWARF .4byte	0x0b3a000d, 0x0803053b, 0x0a381349, 0x00000b32
+	@@DWARF .4byte	0x49000109, 0x000c3c13, 0x00340a00, 0x0b3b0b3a
+	@@DWARF .4byte	0x13490803, 0x0c3f0b33, 0x0f0b0000, 0x0b134900
+	@@DWARF .4byte	0x000b330b, 0x01010c00, 0x0c3c1349, 0x00001301
+	@@DWARF .4byte	0x2f00210d, 0x0e00000b, 0x0b3a0034, 0x0803053b
+	@@DWARF .4byte	0x00001349, 0x4900350f, 0x10000013, 0x0b3a012e
+	@@DWARF .4byte	0x08030b3b, 0x0c270c3f, 0x400c408b, 0x1201110a
+	@@DWARF .4byte	0x00130101, 0x00051100, 0x0b3b0b3a, 0x13490803
+	@@DWARF .4byte	0x0b330a02, 0x0b120000, 0x12011101, 0x13000001
+	@@DWARF .4byte	0x0b3a0034, 0x08030b3b, 0x0a021349, 0x00000b33
+	@@DWARF .4byte	0x11011d14, 0x31011201, 0x15000013, 0x0b3a0005
+	@@DWARF .4byte	0x0803053b, 0x0a021349, 0x13310b33, 0x2e160000
+	@@DWARF .4byte	0x3b0b3a01, 0x3f08030b, 0x400c270c, 0x1201110a
+	@@DWARF .4byte	0x00130101, 0x012e1700, 0x053b0b3a, 0x13490803
+	@@DWARF .4byte	0x0b200c27, 0x00001301, 0x3a000518, 0x03053b0b
+	@@DWARF .4byte	0x00134908, 0x012e1900, 0x053b0b3a, 0x13490803
+	@@DWARF .byte	0x27, 0x0c, 0x20, 0x0b, 0x00, 0x00, 0x00, 0x00
+

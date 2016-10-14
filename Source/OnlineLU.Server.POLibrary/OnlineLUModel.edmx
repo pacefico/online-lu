@@ -1,0 +1,390 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="OnlineLUModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="OnlineLUModelStoreContainer">
+          <EntitySet Name="tbHardwares" EntityType="OnlineLUModel.Store.tbHardwares" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="tbHistories" EntityType="OnlineLUModel.Store.tbHistories" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="tbHistoryDetails" EntityType="OnlineLUModel.Store.tbHistoryDetails" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="tbProjects" EntityType="OnlineLUModel.Store.tbProjects" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="tbUsers" EntityType="OnlineLUModel.Store.tbUsers" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_tbHardwaretbHistory" Association="OnlineLUModel.Store.FK_tbHardwaretbHistory">
+            <End Role="tbHardwares" EntitySet="tbHardwares" />
+            <End Role="tbHistories" EntitySet="tbHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tbHistorytbHistoryDetail" Association="OnlineLUModel.Store.FK_tbHistorytbHistoryDetail">
+            <End Role="tbHistoryDetails" EntitySet="tbHistoryDetails" />
+            <End Role="tbHistories" EntitySet="tbHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tbProjects" Association="OnlineLUModel.Store.FK_tbProjects">
+            <End Role="tbProjects" EntitySet="tbProjects" />
+            <End Role="tbHistories" EntitySet="tbHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tbProjecttbUser" Association="OnlineLUModel.Store.FK_tbProjecttbUser">
+            <End Role="tbUsers" EntitySet="tbUsers" />
+            <End Role="tbProjects" EntitySet="tbProjects" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="tbHardwares">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="HardwareKey" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="SystemName" Type="varchar" MaxLength="50" />
+          <Property Name="CudaCapable" Type="varchar" MaxLength="50" />
+          <Property Name="CoreNumber" Type="int" />
+          <Property Name="ProcessorName" Type="varchar" MaxLength="50" />
+          <Property Name="MemoryAmount" Type="int" />
+        </EntityType>
+        <EntityType Name="tbHistories">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Created" Type="datetime" Nullable="false" />
+          <Property Name="Modified" Type="datetime" Nullable="false" />
+          <Property Name="ExecutionDate" Type="datetime" Nullable="false" />
+          <Property Name="TimeInitialUploadMs" Type="bigint" />
+          <Property Name="TimeDownloadMs" Type="bigint" />
+          <Property Name="TimeCudaMs" Type="bigint" />
+          <Property Name="TimeUploadMs" Type="bigint" />
+          <Property Name="TotalTimeMs" Type="bigint" />
+          <Property Name="Success" Type="bit" Nullable="false" />
+          <Property Name="tbHistoryDetail_ID" Type="bigint" Nullable="false" />
+          <Property Name="tbProjectID" Type="bigint" Nullable="false" />
+          <Property Name="tbHardware_ID" Type="bigint" />
+          <Property Name="Local" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="tbHistoryDetails">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="BytesDownload" Type="varchar" MaxLength="50" />
+          <Property Name="BytesUpload" Type="varchar" MaxLength="50" />
+          <Property Name="RateDownload" Type="varchar" MaxLength="50" />
+          <Property Name="RateUpload" Type="varchar" MaxLength="50" />
+          <Property Name="BytesInitialUpload" Type="varchar" MaxLength="50" />
+          <Property Name="RateInitialUpload" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="tbProjects">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Created" Type="datetime" Nullable="false" />
+          <Property Name="Range" Type="int" Nullable="false" />
+          <Property Name="ContainerName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ContainerNameResult" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="QueueName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="QueueNameResult" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="tbUser_ID" Type="bigint" Nullable="false" />
+          <Property Name="Status" Type="bit" />
+        </EntityType>
+        <EntityType Name="tbUsers">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Password" Type="varchar" Nullable="false" MaxLength="250" />
+        </EntityType>
+        <Association Name="FK_tbHardwaretbHistory">
+          <End Role="tbHardwares" Type="OnlineLUModel.Store.tbHardwares" Multiplicity="0..1" />
+          <End Role="tbHistories" Type="OnlineLUModel.Store.tbHistories" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tbHardwares">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tbHistories">
+              <PropertyRef Name="tbHardware_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tbHistorytbHistoryDetail">
+          <End Role="tbHistoryDetails" Type="OnlineLUModel.Store.tbHistoryDetails" Multiplicity="1" />
+          <End Role="tbHistories" Type="OnlineLUModel.Store.tbHistories" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tbHistoryDetails">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tbHistories">
+              <PropertyRef Name="tbHistoryDetail_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tbProjects">
+          <End Role="tbProjects" Type="OnlineLUModel.Store.tbProjects" Multiplicity="1" />
+          <End Role="tbHistories" Type="OnlineLUModel.Store.tbHistories" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tbProjects">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tbHistories">
+              <PropertyRef Name="tbProjectID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tbProjecttbUser">
+          <End Role="tbUsers" Type="OnlineLUModel.Store.tbUsers" Multiplicity="1" />
+          <End Role="tbProjects" Type="OnlineLUModel.Store.tbProjects" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tbUsers">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tbProjects">
+              <PropertyRef Name="tbUser_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OnlineLUModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="OnlineLUEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="tbHardwares" EntityType="OnlineLUModel.tbHardware" />
+          <EntitySet Name="tbHistories" EntityType="OnlineLUModel.tbHistory" />
+          <EntitySet Name="tbHistoryDetails" EntityType="OnlineLUModel.tbHistoryDetail" />
+          <EntitySet Name="tbProjects" EntityType="OnlineLUModel.tbProject" />
+          <EntitySet Name="tbUsers" EntityType="OnlineLUModel.tbUser" />
+          <AssociationSet Name="FK_tbHardwaretbHistory" Association="OnlineLUModel.FK_tbHardwaretbHistory">
+            <End Role="tbHardware" EntitySet="tbHardwares" />
+            <End Role="tbHistory" EntitySet="tbHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tbHistorytbHistoryDetail" Association="OnlineLUModel.FK_tbHistorytbHistoryDetail">
+            <End Role="tbHistoryDetail" EntitySet="tbHistoryDetails" />
+            <End Role="tbHistory" EntitySet="tbHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tbProjects" Association="OnlineLUModel.FK_tbProjects">
+            <End Role="tbProject" EntitySet="tbProjects" />
+            <End Role="tbHistory" EntitySet="tbHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tbProjecttbUser" Association="OnlineLUModel.FK_tbProjecttbUser">
+            <End Role="tbUser" EntitySet="tbUsers" />
+            <End Role="tbProject" EntitySet="tbProjects" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="tbHardware">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="HardwareKey" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="SystemName" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="CudaCapable" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="CoreNumber" />
+          <Property Type="String" Name="ProcessorName" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="MemoryAmount" />
+          <NavigationProperty Name="tbHistories" Relationship="OnlineLUModel.FK_tbHardwaretbHistory" FromRole="tbHardware" ToRole="tbHistory" />
+        </EntityType>
+        <EntityType Name="tbHistory">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="Created" Nullable="false" Precision="3" />
+          <Property Type="DateTime" Name="Modified" Nullable="false" Precision="3" />
+          <Property Type="DateTime" Name="ExecutionDate" Nullable="false" Precision="3" />
+          <Property Type="Int64" Name="TimeInitialUploadMs" />
+          <Property Type="Int64" Name="TimeDownloadMs" />
+          <Property Type="Int64" Name="TimeCudaMs" />
+          <Property Type="Int64" Name="TimeUploadMs" />
+          <Property Type="Int64" Name="TotalTimeMs" />
+          <Property Type="Boolean" Name="Success" Nullable="false" />
+          <Property Type="Int64" Name="tbHistoryDetail_ID" Nullable="false" />
+          <Property Type="Int64" Name="tbProjectID" Nullable="false" />
+          <Property Type="Int64" Name="tbHardware_ID" />
+          <NavigationProperty Name="tbHardware" Relationship="OnlineLUModel.FK_tbHardwaretbHistory" FromRole="tbHistory" ToRole="tbHardware" />
+          <NavigationProperty Name="tbHistoryDetail" Relationship="OnlineLUModel.FK_tbHistorytbHistoryDetail" FromRole="tbHistory" ToRole="tbHistoryDetail" />
+          <NavigationProperty Name="tbProject" Relationship="OnlineLUModel.FK_tbProjects" FromRole="tbHistory" ToRole="tbProject" />
+          <Property Type="String" Name="Local" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="tbHistoryDetail">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="BytesDownload" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="BytesUpload" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="RateDownload" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="RateUpload" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="BytesInitialUpload" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="RateInitialUpload" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="tbHistories" Relationship="OnlineLUModel.FK_tbHistorytbHistoryDetail" FromRole="tbHistoryDetail" ToRole="tbHistory" />
+        </EntityType>
+        <EntityType Name="tbProject">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="Created" Nullable="false" Precision="3" />
+          <Property Type="Int32" Name="Range" Nullable="false" />
+          <Property Type="String" Name="ContainerName" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ContainerNameResult" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="QueueName" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="QueueNameResult" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int64" Name="tbUser_ID" Nullable="false" />
+          <Property Type="Boolean" Name="Status" />
+          <NavigationProperty Name="tbHistories" Relationship="OnlineLUModel.FK_tbProjects" FromRole="tbProject" ToRole="tbHistory" />
+          <NavigationProperty Name="tbUser" Relationship="OnlineLUModel.FK_tbProjecttbUser" FromRole="tbProject" ToRole="tbUser" />
+        </EntityType>
+        <EntityType Name="tbUser">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Username" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="tbProjects" Relationship="OnlineLUModel.FK_tbProjecttbUser" FromRole="tbUser" ToRole="tbProject" />
+        </EntityType>
+        <Association Name="FK_tbHardwaretbHistory">
+          <End Type="OnlineLUModel.tbHardware" Role="tbHardware" Multiplicity="0..1" />
+          <End Type="OnlineLUModel.tbHistory" Role="tbHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tbHardware">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tbHistory">
+              <PropertyRef Name="tbHardware_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tbHistorytbHistoryDetail">
+          <End Type="OnlineLUModel.tbHistoryDetail" Role="tbHistoryDetail" Multiplicity="1" />
+          <End Type="OnlineLUModel.tbHistory" Role="tbHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tbHistoryDetail">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tbHistory">
+              <PropertyRef Name="tbHistoryDetail_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tbProjects">
+          <End Type="OnlineLUModel.tbProject" Role="tbProject" Multiplicity="1" />
+          <End Type="OnlineLUModel.tbHistory" Role="tbHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tbProject">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tbHistory">
+              <PropertyRef Name="tbProjectID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tbProjecttbUser">
+          <End Type="OnlineLUModel.tbUser" Role="tbUser" Multiplicity="1" />
+          <End Type="OnlineLUModel.tbProject" Role="tbProject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tbUser">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tbProject">
+              <PropertyRef Name="tbUser_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="OnlineLUModelStoreContainer" CdmEntityContainer="OnlineLUEntities">
+          <EntitySetMapping Name="tbHardwares">
+            <EntityTypeMapping TypeName="OnlineLUModel.tbHardware">
+              <MappingFragment StoreEntitySet="tbHardwares">
+                <ScalarProperty Name="MemoryAmount" ColumnName="MemoryAmount" />
+                <ScalarProperty Name="ProcessorName" ColumnName="ProcessorName" />
+                <ScalarProperty Name="CoreNumber" ColumnName="CoreNumber" />
+                <ScalarProperty Name="CudaCapable" ColumnName="CudaCapable" />
+                <ScalarProperty Name="SystemName" ColumnName="SystemName" />
+                <ScalarProperty Name="HardwareKey" ColumnName="HardwareKey" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbHistories">
+            <EntityTypeMapping TypeName="OnlineLUModel.tbHistory">
+              <MappingFragment StoreEntitySet="tbHistories">
+                <ScalarProperty Name="Local" ColumnName="Local" />
+                <ScalarProperty Name="tbHardware_ID" ColumnName="tbHardware_ID" />
+                <ScalarProperty Name="tbProjectID" ColumnName="tbProjectID" />
+                <ScalarProperty Name="tbHistoryDetail_ID" ColumnName="tbHistoryDetail_ID" />
+                <ScalarProperty Name="Success" ColumnName="Success" />
+                <ScalarProperty Name="TotalTimeMs" ColumnName="TotalTimeMs" />
+                <ScalarProperty Name="TimeUploadMs" ColumnName="TimeUploadMs" />
+                <ScalarProperty Name="TimeCudaMs" ColumnName="TimeCudaMs" />
+                <ScalarProperty Name="TimeDownloadMs" ColumnName="TimeDownloadMs" />
+                <ScalarProperty Name="TimeInitialUploadMs" ColumnName="TimeInitialUploadMs" />
+                <ScalarProperty Name="ExecutionDate" ColumnName="ExecutionDate" />
+                <ScalarProperty Name="Modified" ColumnName="Modified" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbHistoryDetails">
+            <EntityTypeMapping TypeName="OnlineLUModel.tbHistoryDetail">
+              <MappingFragment StoreEntitySet="tbHistoryDetails">
+                <ScalarProperty Name="RateInitialUpload" ColumnName="RateInitialUpload" />
+                <ScalarProperty Name="BytesInitialUpload" ColumnName="BytesInitialUpload" />
+                <ScalarProperty Name="RateUpload" ColumnName="RateUpload" />
+                <ScalarProperty Name="RateDownload" ColumnName="RateDownload" />
+                <ScalarProperty Name="BytesUpload" ColumnName="BytesUpload" />
+                <ScalarProperty Name="BytesDownload" ColumnName="BytesDownload" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbProjects">
+            <EntityTypeMapping TypeName="OnlineLUModel.tbProject">
+              <MappingFragment StoreEntitySet="tbProjects">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="tbUser_ID" ColumnName="tbUser_ID" />
+                <ScalarProperty Name="QueueNameResult" ColumnName="QueueNameResult" />
+                <ScalarProperty Name="QueueName" ColumnName="QueueName" />
+                <ScalarProperty Name="ContainerNameResult" ColumnName="ContainerNameResult" />
+                <ScalarProperty Name="ContainerName" ColumnName="ContainerName" />
+                <ScalarProperty Name="Range" ColumnName="Range" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbUsers">
+            <EntityTypeMapping TypeName="OnlineLUModel.tbUser">
+              <MappingFragment StoreEntitySet="tbUsers">
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Default" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

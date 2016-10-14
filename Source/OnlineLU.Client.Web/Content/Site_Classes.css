@@ -1,0 +1,139 @@
+﻿    /******************** Validation Erros *************/
+    .field-validation-error {
+        color: #026FA1;
+    }
+
+    .field-validation-valid {
+        display: none;
+    }
+
+    .input-validation-error { 
+        border: 1px solid #035586;
+        background-color: #ffeeee;
+    }
+
+    .validation-summary-errors {
+        font-weight: bold;
+        color: #026FA1;
+        font-size: 80%;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+    
+    /******************** Login ***********************/    
+    .form-login {
+        width: 400px;
+        height: 300px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin: -140px 0 0 -200px;
+    }
+    
+    .form-login .title {
+        font-size: 110%;
+        border: 1px solid #005182;
+        padding: 10 10 10 10;
+        font-weight: bold;
+    }
+    
+    .form-login .fields {
+        border: 1px solid #005182;
+        padding: 10 10 10 10;
+    }
+    
+    .form-login .fields table {
+        border: 0;
+    }
+    
+    .image-center-logo {
+        width: 700px;
+        height: auto;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin: -100px 0 0 -100px;
+    }
+    
+    .div-column
+    {
+        margin-top: 25px;
+        float: left;
+        text-align:left;
+    }
+    
+    
+    /******************** Reports ***********************/
+    #div-content        
+    {
+        height: 100%;
+        overflow-x: scroll;
+    }
+    
+    .reportItem 
+    {
+        width: 340px;
+        height: 140px;
+        margin: 30px 0 0 30px;
+        border: solid 1px #000;
+    }
+    .reportItem .column1
+    {
+        float: left;
+        text-align: left;
+        width: 85px;
+        height: 100%;
+    }
+    .reportItem .column2
+    {
+        float: left;
+        text-align: left;
+        width: 232px;
+        height: 100px;
+        padding: 5px;
+    }
+    .reportItem .column2 div:first-child
+    {
+        font-size: 18px;
+    }
+    .reportItem img
+    {
+        float: left;
+        text-align: left;
+        width: 75px;
+        height: 74px;
+        position: relative;
+        top: 15px;
+        padding: 5px;
+    }
+    
+    .preview {
+        width: 620px;
+        height: 282px;
+        border: solid 1px #000;
+        padding: 10px;
+        margin-bottom: 5px;
+    }
+    .preview .column1 {
+        float: left;
+        width: 200px;
+        height: 280px;
+        background-color: #555;
+        text-align: center;
+    }
+    .preview .column1 img 
+    {
+        width: 179px;
+        height: 256px;
+        position: relative;
+        top: 12px;
+    }
+    .preview .column2 {
+        float: left;
+        text-align: left;
+        width: 380px;
+        height: 250px;
+        padding: 15px;
+    }

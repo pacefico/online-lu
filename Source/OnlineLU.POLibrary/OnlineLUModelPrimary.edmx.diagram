@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="7c4748a376864cf288a577e3cbb9c0dc" Name="Diagram1" ZoomLevel="86" >
+        <EntityTypeShape EntityType="OnlineLUModelPrimary.User" Width="1.5" PointX="0.5" PointY="0.5" />
+        <EntityTypeShape EntityType="OnlineLUModelPrimary.Project" Width="1.5" PointX="2.75" PointY="0.5" />
+        <AssociationConnector Association="OnlineLUModelPrimary.ProjectUser" />
+        <EntityTypeShape EntityType="OnlineLUModelPrimary.Node" Width="1.5" PointX="2.75" PointY="3.25" />
+        <EntityTypeShape EntityType="OnlineLUModelPrimary.NodeCpu" Width="1.5" PointX="0.5" PointY="5.125" />
+        <EntityTypeShape EntityType="OnlineLUModelPrimary.NodeGpu" Width="1.5" PointX="5" PointY="5" />
+        <AssociationConnector Association="OnlineLUModelPrimary.NodeNodeCpu" />
+        <AssociationConnector Association="OnlineLUModelPrimary.NodeNodeGpu" />
+        <AssociationConnector Association="OnlineLUModelPrimary.UserNode" />
+        <EntityTypeShape EntityType="OnlineLUModelPrimary.ProjectSubmit" Width="1.5" PointX="5.125" PointY="0.5" />
+        <EntityTypeShape EntityType="OnlineLUModelPrimary.ProjectNodeTime" Width="2.5" PointX="7.5" PointY="3.25" />
+        <AssociationConnector Association="OnlineLUModelPrimary.ProjectProjectSubmit" />
+        <AssociationConnector Association="OnlineLUModelPrimary.ProjectSubmitNode" />
+        <AssociationConnector Association="OnlineLUModelPrimary.ProjectSubmitProjectNodeTime" />
+        <AssociationConnector Association="OnlineLUModelPrimary.NodeProjectNodeTime" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

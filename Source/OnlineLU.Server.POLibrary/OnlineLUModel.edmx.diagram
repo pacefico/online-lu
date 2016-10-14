@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="f349b3d93fca484b98fd4ccf64592865" Name="Diagram1" ZoomLevel="82">
+        <EntityTypeShape EntityType="OnlineLUModel.tbHardware" Width="1.5" PointX="6.375" PointY="4" />
+        <EntityTypeShape EntityType="OnlineLUModel.tbHistory" Width="1.5" PointX="4.375" PointY="4.375" />
+        <EntityTypeShape EntityType="OnlineLUModel.tbHistoryDetail" Width="1.5" PointX="0.21493705930883858" PointY="3.7530896234107622" />
+        <EntityTypeShape EntityType="OnlineLUModel.tbProject" Width="1.5" PointX="2.25" PointY="5.875" />
+        <EntityTypeShape EntityType="OnlineLUModel.tbUser" Width="1.5" PointX="2.375" PointY="3.125" />
+        <AssociationConnector Association="OnlineLUModel.FK_tbHardwaretbHistory" />
+        <AssociationConnector Association="OnlineLUModel.FK_tbHistorytbHistoryDetail" />
+        <AssociationConnector Association="OnlineLUModel.FK_tbProjects" />
+        <AssociationConnector Association="OnlineLUModel.FK_tbProjecttbUser" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

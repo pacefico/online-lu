@@ -1,0 +1,384 @@
+﻿var Controllers;
+(function (Controllers) {
+    /// <reference path="../../typings/jquery/jquery.d.ts"/>
+    /// <reference path="../../typings/kendo/kendo.all.d.ts"/>
+    /// <reference path="../../typings/fileapi/fileapi.d.ts"/>
+    /// <reference path="../../TypeLite.d.ts"/>
+    (function (Execution) {
+        var IndexController = (function () {
+            function IndexController() {
+                this.maxRetries = 3;
+                this.blockLength = 0;
+                this.numberOfBlocks = 0;
+                this.currentChunk = 0;
+                this.retryAfterSeconds = 3;
+                this.precision = 10;
+                this.loadDataSource();
+            }
+            IndexController.prototype.onLoad = function () {
+                var _this = this;
+                var _this = this;
+
+                function onSelect(e) {
+                    var dataItem = this.dataItem(e.item.index());
+
+                    if (dataItem.value == 0) {
+                        document.getElementById('div-new-existent').style.display = 'block';
+                        document.getElementById('div-new-aleatory').style.display = 'none';
+                        document.getElementById('div-new-upload').style.display = 'none';
+                    }
+
+                    if (dataItem.value == 1) {
+                        document.getElementById('div-new-existent').style.display = 'none';
+                        document.getElementById('div-new-aleatory').style.display = 'block';
+                        document.getElementById('div-new-upload').style.display = 'none';
+                    }
+
+                    if (dataItem.value == 2) {
+                        document.getElementById('div-new-existent').style.display = 'none';
+                        document.getElementById('div-new-aleatory').style.display = 'none';
+                        document.getElementById('div-new-upload').style.display = 'block';
+                    }
+                }
+                ;
+
+                this.kendoComboOrigin = $("#combo-origin").kendoComboBox({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    dataSource: [
+                        { text: "Existente", value: "0" },
+                        //{ text: "Aleatório", value: "1" },
+                        { text: "Upload", value: "2" }
+                    ],
+                    index: 0,
+                    select: onSelect
+                }).data("kendoComboBox");
+
+                this.kendoNumericRange = $("#combo-range-number").kendoNumericTextBox().data("kendoNumericTextBox");
+
+                //$("#combo-range-number-aleatory").kendoNumericTextBox();
+                var _dataRange = [
+                    { text: "Todos", value: "0" },
+                    { text: "10", value: "1" },
+                    { text: "100", value: "2" },
+                    { text: "1000", value: "3" },
+                    { text: "5000", value: "4" },
+                    { text: "10000", value: "5" }
+                ];
+
+                $("#combo-range").kendoComboBox({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    dataSource: _dataRange,
+                    filter: "contains",
+                    suggest: true,
+                    index: 1
+                });
+
+                //this.kendoDatePickerStart = $("#date-from-filter").kendoDatePicker({
+                //    culture: "pt-br",
+                //    format: "d",
+                //}).data("kendoDatePicker");
+                //var date = new Date();
+                //date.setDate(date.getDate() - 2);
+                //this.kendoDatePickerStart.value(date);
+                //this.kendoDatePickerEnd = $("#date-to-filter").kendoDatePicker({
+                //    culture: "pt-br",
+                //    format: "d",
+                //}).data("kendoDatePicker");
+                //this.kendoDatePickerEnd.value(new Date());
+                $("#combo-range-filter").kendoComboBox({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    dataSource: _dataRange,
+                    //filter: "contains",
+                    //suggest: true,
+                    index: 0
+                });
+
+                $("#combo-status-filter").kendoComboBox({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    dataSource: [
+                        { text: "Todos", value: "0" },
+                        { text: "Concluido", value: "1" },
+                        { text: "Pendente", value: "2" }
+                    ],
+                    //filter: "contains",
+                    //suggest: true,
+                    index: 2
+                });
+
+                $("#grid").kendoGrid({
+                    dataSource: this.dataSourceProject,
+                    groupable: true,
+                    sortable: true,
+                    //detailInit: detailInit,
+                    dataBound: function () {
+                        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+                    },
+                    columns: [
+                        {
+                            field: "ExecutionDate",
+                            title: "Data",
+                            width: "auto",
+                            //format: "dd/MM/yyyy",
+                            template: "#= kendo.toString(kendo.parseDate(ExecutionDate, 'yyyy-MM-dd'), 'dd/MM/yyyy') #"
+                        },
+                        {
+                            field: "Range",
+                            title: "Ordem",
+                            width: "auto"
+                        },
+                        {
+                            field: "Status",
+                            title: "Status",
+                            template: "#= Status ? 'Concluido' : 'Pendente' #",
+                            groupHeaderTemplate: "Status: #= value ? 'Concluido' : 'Pendente' #"
+                        }
+                    ]
+                });
+
+                $("#button-generate").click(function () {
+                    var _index = parseInt($("#combo-origin").data("kendoComboBox").value());
+
+                    if (_index == 0) {
+                        _this.GenerateProcessExistent();
+                    } else if (_index == 2) {
+                        _this.beginUpload();
+                    }
+                });
+
+                $("#button-filter").click(function () {
+                    _this.dataSourceProject.read();
+                });
+
+                this.isLoaded = true;
+                //            this.InitializeReader();
+            };
+
+            IndexController.prototype.InitializeReader = function () {
+                var _this = this;
+                $("#fileUpload").click(function () {
+                    _this.beginUpload();
+                });
+                //$(document).on("click", "#fileUpload", this.beginUpload);
+                //$("#progressBar").progressbar(0);
+            };
+
+            IndexController.prototype.beginUpload = function () {
+                var _this = this;
+                var fileControl = document.getElementById('selectFile');
+
+                if (fileControl.files.length > 0) {
+                    for (var i = 0; i < fileControl.files.length; i++) {
+                        _this.uploadMetaData(fileControl.files[i], i);
+                    }
+                }
+            };
+
+            IndexController.prototype.uploadMetaData = function (file, index) {
+                var _this = this;
+                var size = file.size;
+
+                //    numberOfBlocks = Math.ceil(file.size / blockLength);
+                this.numberOfBlocks = Math.sqrt(size / this.precision);
+                this.blockLength = this.numberOfBlocks * this.precision;
+                var name = file.name;
+                this.currentChunk = 0;
+
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    url: "/Home/SetMetadata?blocksCount=" + this.numberOfBlocks + "&fileName=" + name + "&fileSize=" + size
+                }).done(function (state) {
+                    if (state === true) {
+                        _this.displayStatusMessage("Starting Upload");
+                        _this.sendFile(file, _this.blockLength);
+                    }
+                }).fail(function () {
+                    _this.displayStatusMessage("Failed to send MetaData");
+                });
+            };
+
+            IndexController.prototype.sendFile = function (file, chunkSize) {
+                var _this = this;
+                var _this = this;
+                var start = 0, end = Math.min(chunkSize, file.size), retryCount = 0, sendNextChunk, fileChunk;
+                this.displayStatusMessage("");
+
+                sendNextChunk = function () {
+                    fileChunk = new FormData();
+
+                    if (file.slice) {
+                        fileChunk.append('Slice', file.slice(start, end));
+                    } else if (file.webkitSlice) {
+                        fileChunk.append('Slice', file.webkitSlice(start, end));
+                    } else if (file.mozSlice) {
+                        fileChunk.append('Slice', file.mozSlice(start, end));
+                    } else {
+                        //this.displayStatusMessage(operationType.UNSUPPORTED_BROWSER);
+                        return;
+                    }
+                    var timeout = 5000;
+                    if (_this.currentChunk == _this.numberOfBlocks - 1) {
+                        timeout = 60 * 60000;
+                    }
+                    var jqxhr = $.ajax({
+                        async: true,
+                        url: ('/Home/UploadChunk?id=' + _this.currentChunk),
+                        data: fileChunk,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        timeout: timeout,
+                        type: 'POST'
+                    }).fail(function (request, error) {
+                        if (error !== 'abort' && retryCount < _this.maxRetries) {
+                            ++retryCount;
+                            setTimeout(sendNextChunk, _this.retryAfterSeconds * 1000);
+                        }
+
+                        if (error === 'abort') {
+                            _this.displayStatusMessage("Aborted");
+                        } else {
+                            if (retryCount === _this.maxRetries) {
+                                _this.displayStatusMessage("Upload timed out.");
+                                //resetControls();
+                                //uploader = null;
+                            } else {
+                                _this.displayStatusMessage("Resuming Upload");
+                            }
+                        }
+
+                        return;
+                    }).done(function (notice) {
+                        if (notice.error || notice.isLastBlock) {
+                            _this.displayStatusMessage(notice.message);
+                            return;
+                        }
+                        ++_this.currentChunk;
+                        start = (_this.currentChunk) * _this.blockLength;
+                        end = Math.min((_this.currentChunk + 1) * _this.blockLength, file.size);
+                        retryCount = 0;
+                        _this.updateProgress();
+                        if (_this.currentChunk < _this.numberOfBlocks) {
+                            sendNextChunk();
+                        }
+                    });
+                };
+                sendNextChunk();
+            };
+
+            IndexController.prototype.displayStatusMessage = function (message) {
+                $("#statusMessage").text(message);
+            };
+
+            IndexController.prototype.updateProgress = function () {
+                var progress = this.currentChunk / this.numberOfBlocks * 100;
+                if (progress <= 100) {
+                    //$("#progressBar").progressbar("option", "value", parseInt(progress));
+                    this.displayStatusMessage("Uploaded " + progress.toFixed(2) + "%");
+                }
+            };
+
+            IndexController.prototype.GenerateProcessExistent = function () {
+                var _this = this;
+                var _dataCombo = $("#combo-origin").data("kendoComboBox").value();
+
+                if (_dataCombo == 0) {
+                    var _rangeIndex = parseInt($("#combo-range").data("kendoComboBox").value());
+                    if (_rangeIndex > 0) {
+                        var _range = parseInt($("#combo-range").data("kendoComboBox").text());
+                        var _project = {
+                            ID: 0,
+                            ExecutionDate: null,
+                            Range: _range,
+                            Status: false,
+                            History: null
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/Home/GenerateProjectExecution",
+                            data: _project,
+                            success: function (response) {
+                                if (response) {
+                                    if (response.Result == true) {
+                                        alert("Execução cadastrada com sucesso!");
+                                        _this.dataSourceProject.read();
+                                    } else {
+                                        alert("Houve erro na solicitação!");
+                                    }
+                                }
+                            },
+                            dataType: "json",
+                            traditional: true
+                        });
+                    } else {
+                        alert("É necessário selecionar uma ordem correta!");
+                    }
+                }
+            };
+
+            IndexController.prototype.loadDataSource = function () {
+                var _this = this;
+                this.dataSourceProject = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: "/Home/GetExecutions",
+                            type: "POST",
+                            data: function () {
+                                return _this.GetProjectFillterParam();
+                            }
+                        }
+                    },
+                    schema: {
+                        model: {
+                            id: "ID",
+                            fields: {
+                                ExecutionDate: {
+                                    type: "date",
+                                    editable: false
+                                },
+                                Range: {
+                                    type: "number",
+                                    editable: false
+                                },
+                                Status: {
+                                    type: "boolean",
+                                    editable: false
+                                }
+                            }
+                        },
+                        data: function (jsonresp) {
+                            return jsonresp.Result;
+                        }
+                    }
+                });
+            };
+
+            IndexController.prototype.GetProjectFillterParam = function () {
+                if (this.isLoaded) {
+                    var _paramVM = Object.create({});
+
+                    var _rangeIndex = parseInt($("#combo-range-filter").data("kendoComboBox").value());
+                    if (_rangeIndex > 0) {
+                        _paramVM.Range = parseInt($("#combo-range-filter").data("kendoComboBox").text());
+                    }
+
+                    var _statusComboIndex = parseInt($("#combo-status-filter").data("kendoComboBox").value());
+                    if (_statusComboIndex > 0) {
+                        _paramVM.Status = _statusComboIndex == 1 ? true : false;
+                    }
+
+                    return _paramVM;
+                }
+                return null;
+            };
+            return IndexController;
+        })();
+        Execution.IndexController = IndexController;
+    })(Controllers.Execution || (Controllers.Execution = {}));
+    var Execution = Controllers.Execution;
+})(Controllers || (Controllers = {}));

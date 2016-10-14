@@ -1,0 +1,170 @@
+﻿@model OnlineLU.Client.Web.Models.CloudFilesModel
+@{
+    
+    ViewBag.Title = "Nova Execução";
+}
+
+<script src="@Url.Content("~/Scripts/Controllers/Execution/IndexController.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+        // Great success! All the File APIs are supported.
+    } else {
+        alert('The File APIs are not fully supported in this browser.');
+    }
+</script>
+
+<fieldset class="plus-legend" style="display: block">
+    <legend>Gerar nova execução</legend>
+
+
+   <div class="field-box vertical sep-all">
+        <div class="editor-label">
+            <label>Selecione a origem</label>
+        </div>
+        <div class="editor-field">
+            <input id="combo-origin" />
+        </div>
+    </div>
+
+
+    <div id="div-new-existent" style="display:block">
+        <div class="field-box vertical sep-all" >
+            <div class="editor-label">
+                <label>Ordem</label>
+            </div>
+            <div class="editor-field">
+                <input id="combo-range" />
+            </div>
+        </div>
+    </div>
+
+    <div id="div-new-aleatory" style="display:none">
+        <div class="field-box vertical sep-all">
+            <div class="editor-label">
+                <label>Selecione a ordem</label>
+            </div>
+            <div class="editor-field">
+                <input id="combo-range-number-aleatory" />
+            </div>
+        </div>
+    </div>
+
+    <div id="div-new-upload" style="display:none">
+@*       <div class="field-box vertical sep-all">
+            <div class="editor-label">
+                <label>Selecione a ordem</label>
+            </div>
+            <div class="editor-field">
+                <input id="combo-range-number" />
+            </div>
+        </div>*@
+
+        <div class="field-box vertical sep-all">
+            <div class="editor-label">
+                <label>Upload File:</label>
+            </div>
+            <div class="editor-field">
+                <input type="file" id="selectFile" name="selectFile" />
+                @*<input type="submit" name="fileUpload" id="fileUpload" value="Upload" />
+                <br />
+                <div id="progressBar" style="width:50%; height:20px; background-color:grey"></div>
+                <br />*@
+                <label id="statusMessage"></label>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="field-box vertical sep-all">
+        <div class="editor-field">
+            <button id="button-generate" class="k-button" style="width:70px; height:30px;">Gerar</button>
+            <label id="label-generate" style="color:red"></label>
+        </div>
+    </div>
+
+
+</fieldset>
+
+
+<fieldset class="plus-legend" style="display: block; margin-top:50px;">
+    <legend>Status das Execuções</legend>
+
+<div id ="filterDiv">
+    <div class="editor-label">
+        <label>Filtro de busca:</label>
+    </div>
+
+@*    <div class="field-box vertical sep-all">
+        <div class="editor-label">
+            <label>Periodo</label>
+        </div>
+        <div class="editor-field">
+            <input id="date-from-filter" data-bind="value: DateFrom" />
+            <input id="date-to-filter"  data-bind="value: DateTo" />
+        </div>
+    </div>*@
+
+    <div class="field-box vertical sep-all">
+        <div class="editor-label">
+            <label>Ordem</label>
+        </div>
+        <div class="editor-field">
+            <input id="combo-range-filter" />
+        </div>
+    </div>
+
+    <div class="field-box vertical sep-all">
+        <div class="editor-label">
+            <label>Status</label>
+        </div>
+        <div class="editor-field">
+            <input id="combo-status-filter" />
+        </div>
+    </div>
+
+        <div class="field-box vertical sep-all">
+        <div class="editor-field">
+            <button id="button-filter" class="k-button" style="width:70px; height:30px;">Filtrar</button>
+            @*<a href="#" class="button action bluebtn">Gerar</a>*@
+        </div>
+    </div>
+</div>
+
+    <div id="grid" class="k-grid k-widget" style="height: 365px; background-color: whitesmoke"></div>
+
+</fieldset>
+
+    <script type="text/javascript">
+
+        var m_Controller = new Controllers.Execution.IndexController();
+
+        $(document).ready(function () {
+            m_Controller.onLoad();
+        });
+
+    </script>
+
+<style>
+  #progress_bar {
+    margin: 10px 0;
+    padding: 3px;
+    border: 1px solid #000;
+    font-size: 14px;
+    clear: both;
+    opacity: 0;
+    -moz-transition: opacity 1s linear;
+    -o-transition: opacity 1s linear;
+    -webkit-transition: opacity 1s linear;
+  }
+  #progress_bar.loading {
+    opacity: 1.0;
+  }
+  #progress_bar .percent {
+    background-color: #99ccff;
+    height: auto;
+    width: 0;
+  }
+</style>
+
+

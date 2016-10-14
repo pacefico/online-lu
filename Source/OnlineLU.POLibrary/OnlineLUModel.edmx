@@ -1,0 +1,646 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="OnlineLUModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="OnlineLUModelStoreContainer">
+          <EntitySet Name="Node" EntityType="OnlineLUModel.Store.Node" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="NodeCpu" EntityType="OnlineLUModel.Store.NodeCpu" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="NodeGpu" EntityType="OnlineLUModel.Store.NodeGpu" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="NodeProjectNodeTime" EntityType="OnlineLUModel.Store.NodeProjectNodeTime" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Project" EntityType="OnlineLUModel.Store.Project" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="ProjectNodeTime" EntityType="OnlineLUModel.Store.ProjectNodeTime" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="ProjectProjectSubmit" EntityType="OnlineLUModel.Store.ProjectProjectSubmit" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="ProjectSubmit" EntityType="OnlineLUModel.Store.ProjectSubmit" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="ProjectSubmitNode" EntityType="OnlineLUModel.Store.ProjectSubmitNode" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="User" EntityType="OnlineLUModel.Store.User" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_NodeNodeCpu" Association="OnlineLUModel.Store.FK_NodeNodeCpu">
+            <End Role="NodeCpu" EntitySet="NodeCpu" />
+            <End Role="Node" EntitySet="Node" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NodeNodeGpu" Association="OnlineLUModel.Store.FK_NodeNodeGpu">
+            <End Role="Node" EntitySet="Node" />
+            <End Role="NodeGpu" EntitySet="NodeGpu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NodeProjectNodeTime_Node" Association="OnlineLUModel.Store.FK_NodeProjectNodeTime_Node">
+            <End Role="Node" EntitySet="Node" />
+            <End Role="NodeProjectNodeTime" EntitySet="NodeProjectNodeTime" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NodeProjectNodeTime_ProjectNodeTime" Association="OnlineLUModel.Store.FK_NodeProjectNodeTime_ProjectNodeTime">
+            <End Role="ProjectNodeTime" EntitySet="ProjectNodeTime" />
+            <End Role="NodeProjectNodeTime" EntitySet="NodeProjectNodeTime" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectProjectSubmit_Project" Association="OnlineLUModel.Store.FK_ProjectProjectSubmit_Project">
+            <End Role="Project" EntitySet="Project" />
+            <End Role="ProjectProjectSubmit" EntitySet="ProjectProjectSubmit" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectProjectSubmit_ProjectSubmit" Association="OnlineLUModel.Store.FK_ProjectProjectSubmit_ProjectSubmit">
+            <End Role="ProjectSubmit" EntitySet="ProjectSubmit" />
+            <End Role="ProjectProjectSubmit" EntitySet="ProjectProjectSubmit" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectSubmitNode_Node" Association="OnlineLUModel.Store.FK_ProjectSubmitNode_Node">
+            <End Role="Node" EntitySet="Node" />
+            <End Role="ProjectSubmitNode" EntitySet="ProjectSubmitNode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectSubmitNode_ProjectSubmit" Association="OnlineLUModel.Store.FK_ProjectSubmitNode_ProjectSubmit">
+            <End Role="ProjectSubmit" EntitySet="ProjectSubmit" />
+            <End Role="ProjectSubmitNode" EntitySet="ProjectSubmitNode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectSubmitProjectNodeTime" Association="OnlineLUModel.Store.FK_ProjectSubmitProjectNodeTime">
+            <End Role="ProjectNodeTime" EntitySet="ProjectNodeTime" />
+            <End Role="ProjectSubmit" EntitySet="ProjectSubmit" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectUser" Association="OnlineLUModel.Store.FK_ProjectUser">
+            <End Role="User" EntitySet="User" />
+            <End Role="Project" EntitySet="Project" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserNode" Association="OnlineLUModel.Store.FK_UserNode">
+            <End Role="User" EntitySet="User" />
+            <End Role="Node" EntitySet="Node" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Node">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Created" Type="datetime" Nullable="false" />
+          <Property Name="LastComunnication" Type="datetime" Nullable="false" />
+          <Property Name="MachineName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Activated" Type="bit" Nullable="false" />
+          <Property Name="HardwareKey" Type="nvarchar(max)" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="NodeCpu_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="NodeCpu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Model" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Processor" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Cores" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Memory" Type="int" Nullable="false" />
+          <Property Name="Created" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="NodeGpu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Capability" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Cores" Type="int" Nullable="false" />
+          <Property Name="Processor" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Memory" Type="int" Nullable="false" />
+          <Property Name="Created" Type="datetime" Nullable="false" />
+          <Property Name="Node_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="NodeProjectNodeTime">
+          <Key>
+            <PropertyRef Name="Node_Id" />
+            <PropertyRef Name="ProjectNodeTime_Id" />
+          </Key>
+          <Property Name="Node_Id" Type="int" Nullable="false" />
+          <Property Name="ProjectNodeTime_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Project">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Created" Type="datetime" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="User_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProjectNodeTime">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="NodeQueueProcess" Type="datetimeoffset" />
+          <Property Name="NodeDownload" Type="datetimeoffset" />
+          <Property Name="NodeThreadInstance" Type="datetimeoffset" />
+          <Property Name="NodeUploadResult" Type="datetimeoffset" />
+          <Property Name="NodePivot" Type="datetimeoffset" />
+          <Property Name="NodeLocalProcess" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProjectProjectSubmit">
+          <Key>
+            <PropertyRef Name="Project_Id" />
+            <PropertyRef Name="ProjectSubmit_Id" />
+          </Key>
+          <Property Name="Project_Id" Type="int" Nullable="false" />
+          <Property Name="ProjectSubmit_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProjectSubmit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="SubmissionDate" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="EndDate" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Guid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ProjectNodeTime_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProjectSubmitNode">
+          <Key>
+            <PropertyRef Name="ProjectSubmit_Id" />
+            <PropertyRef Name="Node_Id" />
+          </Key>
+          <Property Name="ProjectSubmit_Id" Type="int" Nullable="false" />
+          <Property Name="Node_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Created" Type="datetime" Nullable="false" />
+          <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_NodeNodeCpu">
+          <End Role="NodeCpu" Type="OnlineLUModel.Store.NodeCpu" Multiplicity="1" />
+          <End Role="Node" Type="OnlineLUModel.Store.Node" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NodeCpu">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Node">
+              <PropertyRef Name="NodeCpu_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NodeNodeGpu">
+          <End Role="Node" Type="OnlineLUModel.Store.Node" Multiplicity="1" />
+          <End Role="NodeGpu" Type="OnlineLUModel.Store.NodeGpu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Node">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="NodeGpu">
+              <PropertyRef Name="Node_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NodeProjectNodeTime_Node">
+          <End Role="Node" Type="OnlineLUModel.Store.Node" Multiplicity="1" />
+          <End Role="NodeProjectNodeTime" Type="OnlineLUModel.Store.NodeProjectNodeTime" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Node">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="NodeProjectNodeTime">
+              <PropertyRef Name="Node_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NodeProjectNodeTime_ProjectNodeTime">
+          <End Role="ProjectNodeTime" Type="OnlineLUModel.Store.ProjectNodeTime" Multiplicity="1" />
+          <End Role="NodeProjectNodeTime" Type="OnlineLUModel.Store.NodeProjectNodeTime" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProjectNodeTime">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="NodeProjectNodeTime">
+              <PropertyRef Name="ProjectNodeTime_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectProjectSubmit_Project">
+          <End Role="Project" Type="OnlineLUModel.Store.Project" Multiplicity="1" />
+          <End Role="ProjectProjectSubmit" Type="OnlineLUModel.Store.ProjectProjectSubmit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Project">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectProjectSubmit">
+              <PropertyRef Name="Project_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectProjectSubmit_ProjectSubmit">
+          <End Role="ProjectSubmit" Type="OnlineLUModel.Store.ProjectSubmit" Multiplicity="1" />
+          <End Role="ProjectProjectSubmit" Type="OnlineLUModel.Store.ProjectProjectSubmit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProjectSubmit">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectProjectSubmit">
+              <PropertyRef Name="ProjectSubmit_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectSubmitNode_Node">
+          <End Role="Node" Type="OnlineLUModel.Store.Node" Multiplicity="1" />
+          <End Role="ProjectSubmitNode" Type="OnlineLUModel.Store.ProjectSubmitNode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Node">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectSubmitNode">
+              <PropertyRef Name="Node_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectSubmitNode_ProjectSubmit">
+          <End Role="ProjectSubmit" Type="OnlineLUModel.Store.ProjectSubmit" Multiplicity="1" />
+          <End Role="ProjectSubmitNode" Type="OnlineLUModel.Store.ProjectSubmitNode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProjectSubmit">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectSubmitNode">
+              <PropertyRef Name="ProjectSubmit_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectSubmitProjectNodeTime">
+          <End Role="ProjectNodeTime" Type="OnlineLUModel.Store.ProjectNodeTime" Multiplicity="1" />
+          <End Role="ProjectSubmit" Type="OnlineLUModel.Store.ProjectSubmit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProjectNodeTime">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectSubmit">
+              <PropertyRef Name="ProjectNodeTime_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectUser">
+          <End Role="User" Type="OnlineLUModel.Store.User" Multiplicity="1" />
+          <End Role="Project" Type="OnlineLUModel.Store.Project" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Project">
+              <PropertyRef Name="User_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserNode">
+          <End Role="User" Type="OnlineLUModel.Store.User" Multiplicity="1" />
+          <End Role="Node" Type="OnlineLUModel.Store.Node" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Node">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OnlineLUModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+        <EntityContainer Name="OnlineLUEntities" p1:LazyLoadingEnabled="true" >
+          <EntitySet Name="Node" EntityType="OnlineLUModel.Node" />
+          <EntitySet Name="NodeCpu" EntityType="OnlineLUModel.NodeCpu" />
+          <EntitySet Name="NodeGpu" EntityType="OnlineLUModel.NodeGpu" />
+          <EntitySet Name="Project" EntityType="OnlineLUModel.Project" />
+          <EntitySet Name="ProjectNodeTime" EntityType="OnlineLUModel.ProjectNodeTime" />
+          <EntitySet Name="ProjectSubmit" EntityType="OnlineLUModel.ProjectSubmit" />
+          <EntitySet Name="User" EntityType="OnlineLUModel.User" />
+          <AssociationSet Name="FK_NodeNodeCpu" Association="OnlineLUModel.FK_NodeNodeCpu">
+            <End Role="NodeCpu" EntitySet="NodeCpu" />
+            <End Role="Node" EntitySet="Node" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NodeNodeGpu" Association="OnlineLUModel.FK_NodeNodeGpu">
+            <End Role="Node" EntitySet="Node" />
+            <End Role="NodeGpu" EntitySet="NodeGpu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserNode" Association="OnlineLUModel.FK_UserNode">
+            <End Role="User" EntitySet="User" />
+            <End Role="Node" EntitySet="Node" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectUser" Association="OnlineLUModel.FK_ProjectUser">
+            <End Role="User" EntitySet="User" />
+            <End Role="Project" EntitySet="Project" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectSubmitProjectNodeTime" Association="OnlineLUModel.FK_ProjectSubmitProjectNodeTime">
+            <End Role="ProjectNodeTime" EntitySet="ProjectNodeTime" />
+            <End Role="ProjectSubmit" EntitySet="ProjectSubmit" />
+          </AssociationSet>
+          <AssociationSet Name="NodeProjectNodeTime" Association="OnlineLUModel.NodeProjectNodeTime">
+            <End Role="Node" EntitySet="Node" />
+            <End Role="ProjectNodeTime" EntitySet="ProjectNodeTime" />
+          </AssociationSet>
+          <AssociationSet Name="ProjectProjectSubmit" Association="OnlineLUModel.ProjectProjectSubmit">
+            <End Role="Project" EntitySet="Project" />
+            <End Role="ProjectSubmit" EntitySet="ProjectSubmit" />
+          </AssociationSet>
+          <AssociationSet Name="ProjectSubmitNode" Association="OnlineLUModel.ProjectSubmitNode">
+            <End Role="Node" EntitySet="Node" />
+            <End Role="ProjectSubmit" EntitySet="ProjectSubmit" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Node">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="Created" Nullable="false" Precision="3" />
+          <Property Type="DateTime" Name="LastComunnication" Nullable="false" Precision="3" />
+          <Property Type="String" Name="MachineName" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="Activated" Nullable="false" />
+          <Property Type="String" Name="HardwareKey" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="UserId" Nullable="false" />
+          <Property Type="Int32" Name="NodeCpu_Id" Nullable="false" />
+          <NavigationProperty Name="NodeCpu" Relationship="OnlineLUModel.FK_NodeNodeCpu" FromRole="Node" ToRole="NodeCpu" />
+          <NavigationProperty Name="NodeGpu" Relationship="OnlineLUModel.FK_NodeNodeGpu" FromRole="Node" ToRole="NodeGpu" />
+          <NavigationProperty Name="User" Relationship="OnlineLUModel.FK_UserNode" FromRole="Node" ToRole="User" />
+          <NavigationProperty Name="ProjectNodeTime" Relationship="OnlineLUModel.NodeProjectNodeTime" FromRole="Node" ToRole="ProjectNodeTime" />
+          <NavigationProperty Name="ProjectSubmit" Relationship="OnlineLUModel.ProjectSubmitNode" FromRole="Node" ToRole="ProjectSubmit" />
+        </EntityType>
+        <EntityType Name="NodeCpu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Model" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Processor" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Cores" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="Memory" Nullable="false" />
+          <Property Type="DateTime" Name="Created" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Node" Relationship="OnlineLUModel.FK_NodeNodeCpu" FromRole="NodeCpu" ToRole="Node" />
+        </EntityType>
+        <EntityType Name="NodeGpu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Capability" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="Cores" Nullable="false" />
+          <Property Type="String" Name="Processor" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="Memory" Nullable="false" />
+          <Property Type="DateTime" Name="Created" Nullable="false" Precision="3" />
+          <Property Type="Int32" Name="Node_Id" Nullable="false" />
+          <NavigationProperty Name="Node" Relationship="OnlineLUModel.FK_NodeNodeGpu" FromRole="NodeGpu" ToRole="Node" />
+        </EntityType>
+        <EntityType Name="Project">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="Created" Nullable="false" Precision="3" />
+          <Property Type="String" Name="Description" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="User_Id" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="OnlineLUModel.FK_ProjectUser" FromRole="Project" ToRole="User" />
+          <NavigationProperty Name="ProjectSubmit" Relationship="OnlineLUModel.ProjectProjectSubmit" FromRole="Project" ToRole="ProjectSubmit" />
+        </EntityType>
+        <EntityType Name="ProjectNodeTime">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTimeOffset" Name="NodeQueueProcess" Precision="7" />
+          <Property Type="DateTimeOffset" Name="NodeDownload" Precision="7" />
+          <Property Type="DateTimeOffset" Name="NodeThreadInstance" Precision="7" />
+          <Property Type="DateTimeOffset" Name="NodeUploadResult" Precision="7" />
+          <Property Type="DateTimeOffset" Name="NodePivot" Precision="7" />
+          <Property Type="String" Name="NodeLocalProcess" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ProjectSubmit" Relationship="OnlineLUModel.FK_ProjectSubmitProjectNodeTime" FromRole="ProjectNodeTime" ToRole="ProjectSubmit" />
+          <NavigationProperty Name="Node" Relationship="OnlineLUModel.NodeProjectNodeTime" FromRole="ProjectNodeTime" ToRole="Node" />
+        </EntityType>
+        <EntityType Name="ProjectSubmit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="SubmissionDate" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="EndDate" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Guid" Name="Guid" Nullable="false" />
+          <Property Type="Int32" Name="ProjectNodeTime_Id" Nullable="false" />
+          <NavigationProperty Name="ProjectNodeTime" Relationship="OnlineLUModel.FK_ProjectSubmitProjectNodeTime" FromRole="ProjectSubmit" ToRole="ProjectNodeTime" />
+          <NavigationProperty Name="Project" Relationship="OnlineLUModel.ProjectProjectSubmit" FromRole="ProjectSubmit" ToRole="Project" />
+          <NavigationProperty Name="Node" Relationship="OnlineLUModel.ProjectSubmitNode" FromRole="ProjectSubmit" ToRole="Node" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="Created" Nullable="false" Precision="3" />
+          <Property Type="String" Name="Email" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Node" Relationship="OnlineLUModel.FK_UserNode" FromRole="User" ToRole="Node" />
+          <NavigationProperty Name="Project" Relationship="OnlineLUModel.FK_ProjectUser" FromRole="User" ToRole="Project" />
+        </EntityType>
+        <Association Name="FK_NodeNodeCpu">
+          <End Type="OnlineLUModel.NodeCpu" Role="NodeCpu" Multiplicity="1" />
+          <End Type="OnlineLUModel.Node" Role="Node" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NodeCpu">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Node">
+              <PropertyRef Name="NodeCpu_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NodeNodeGpu">
+          <End Type="OnlineLUModel.Node" Role="Node" Multiplicity="1" />
+          <End Type="OnlineLUModel.NodeGpu" Role="NodeGpu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Node">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="NodeGpu">
+              <PropertyRef Name="Node_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserNode">
+          <End Type="OnlineLUModel.User" Role="User" Multiplicity="1" />
+          <End Type="OnlineLUModel.Node" Role="Node" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Node">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectUser">
+          <End Type="OnlineLUModel.User" Role="User" Multiplicity="1" />
+          <End Type="OnlineLUModel.Project" Role="Project" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Project">
+              <PropertyRef Name="User_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectSubmitProjectNodeTime">
+          <End Type="OnlineLUModel.ProjectNodeTime" Role="ProjectNodeTime" Multiplicity="1" />
+          <End Type="OnlineLUModel.ProjectSubmit" Role="ProjectSubmit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProjectNodeTime">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectSubmit">
+              <PropertyRef Name="ProjectNodeTime_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="NodeProjectNodeTime">
+          <End Type="OnlineLUModel.Node" Role="Node" Multiplicity="*" />
+          <End Type="OnlineLUModel.ProjectNodeTime" Role="ProjectNodeTime" Multiplicity="*" />
+        </Association>
+        <Association Name="ProjectProjectSubmit">
+          <End Type="OnlineLUModel.Project" Role="Project" Multiplicity="*" />
+          <End Type="OnlineLUModel.ProjectSubmit" Role="ProjectSubmit" Multiplicity="*" />
+        </Association>
+        <Association Name="ProjectSubmitNode">
+          <End Type="OnlineLUModel.Node" Role="Node" Multiplicity="*" />
+          <End Type="OnlineLUModel.ProjectSubmit" Role="ProjectSubmit" Multiplicity="*" />
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="OnlineLUModelStoreContainer" CdmEntityContainer="OnlineLUEntities" >
+          <EntitySetMapping Name="Node">
+            <EntityTypeMapping TypeName="OnlineLUModel.Node">
+              <MappingFragment StoreEntitySet="Node">
+                <ScalarProperty Name="NodeCpu_Id" ColumnName="NodeCpu_Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="HardwareKey" ColumnName="HardwareKey" />
+                <ScalarProperty Name="Activated" ColumnName="Activated" />
+                <ScalarProperty Name="MachineName" ColumnName="MachineName" />
+                <ScalarProperty Name="LastComunnication" ColumnName="LastComunnication" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NodeCpu">
+            <EntityTypeMapping TypeName="OnlineLUModel.NodeCpu">
+              <MappingFragment StoreEntitySet="NodeCpu">
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="Memory" ColumnName="Memory" />
+                <ScalarProperty Name="Cores" ColumnName="Cores" />
+                <ScalarProperty Name="Processor" ColumnName="Processor" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NodeGpu">
+            <EntityTypeMapping TypeName="OnlineLUModel.NodeGpu">
+              <MappingFragment StoreEntitySet="NodeGpu">
+                <ScalarProperty Name="Node_Id" ColumnName="Node_Id" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="Memory" ColumnName="Memory" />
+                <ScalarProperty Name="Processor" ColumnName="Processor" />
+                <ScalarProperty Name="Cores" ColumnName="Cores" />
+                <ScalarProperty Name="Capability" ColumnName="Capability" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Project">
+            <EntityTypeMapping TypeName="OnlineLUModel.Project">
+              <MappingFragment StoreEntitySet="Project">
+                <ScalarProperty Name="User_Id" ColumnName="User_Id" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProjectNodeTime">
+            <EntityTypeMapping TypeName="OnlineLUModel.ProjectNodeTime">
+              <MappingFragment StoreEntitySet="ProjectNodeTime">
+                <ScalarProperty Name="NodeLocalProcess" ColumnName="NodeLocalProcess" />
+                <ScalarProperty Name="NodePivot" ColumnName="NodePivot" />
+                <ScalarProperty Name="NodeUploadResult" ColumnName="NodeUploadResult" />
+                <ScalarProperty Name="NodeThreadInstance" ColumnName="NodeThreadInstance" />
+                <ScalarProperty Name="NodeDownload" ColumnName="NodeDownload" />
+                <ScalarProperty Name="NodeQueueProcess" ColumnName="NodeQueueProcess" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProjectSubmit">
+            <EntityTypeMapping TypeName="OnlineLUModel.ProjectSubmit">
+              <MappingFragment StoreEntitySet="ProjectSubmit">
+                <ScalarProperty Name="ProjectNodeTime_Id" ColumnName="ProjectNodeTime_Id" />
+                <ScalarProperty Name="Guid" ColumnName="Guid" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="SubmissionDate" ColumnName="SubmissionDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User">
+            <EntityTypeMapping TypeName="OnlineLUModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="NodeProjectNodeTime" TypeName="OnlineLUModel.NodeProjectNodeTime" StoreEntitySet="NodeProjectNodeTime">
+            <EndProperty Name="ProjectNodeTime">
+              <ScalarProperty Name="Id" ColumnName="ProjectNodeTime_Id" />
+            </EndProperty>
+            <EndProperty Name="Node">
+              <ScalarProperty Name="Id" ColumnName="Node_Id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="ProjectProjectSubmit" TypeName="OnlineLUModel.ProjectProjectSubmit" StoreEntitySet="ProjectProjectSubmit">
+            <EndProperty Name="ProjectSubmit">
+              <ScalarProperty Name="Id" ColumnName="ProjectSubmit_Id" />
+            </EndProperty>
+            <EndProperty Name="Project">
+              <ScalarProperty Name="Id" ColumnName="Project_Id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="ProjectSubmitNode" TypeName="OnlineLUModel.ProjectSubmitNode" StoreEntitySet="ProjectSubmitNode">
+            <EndProperty Name="ProjectSubmit">
+              <ScalarProperty Name="Id" ColumnName="ProjectSubmit_Id" />
+            </EndProperty>
+            <EndProperty Name="Node">
+              <ScalarProperty Name="Id" ColumnName="Node_Id" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Default" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams />
+  </Designer>
+</edmx:Edmx>
