@@ -63,6 +63,19 @@ The work function in turn, monitoring the queue of processed items, checks the p
 
 And then, these results will be available for the user, who can access the history and the final result of the LU decomposition file (12).
 
+## Technologies, language and tools involved
+
+- Nvidia Gpu 
+- Nvidia CUDA Model
+- Microsfot Azure Services
+- Microsoft Visual Studio
+- SQL Database
+- .Net Framework
+- Asp.Net
+- C# Programming Language
+- C Language
+- Rest, Json, Entity Framework, Linq
+
 
 ## Copyright
 
