@@ -1,4 +1,4 @@
-# CLOUD-LU: PROGRAMAÇÃO PARALELA PARA GPU UTILIZANDO PLATAFORMAS DE DESENVOLVIMENTO EM SERVIÇOS DE NUVEM (AZURE)
+# CLOUD-LU: Parallel code for gpu system using .Net framework based on Azure Cloud services
 Paulo Figueiredo - Faculty of Technology - State University of Campinas - UNICAMP @2014
 
 Project and dissertation thesis submitted to the State University of Campinas, as part of the mandatory requirements for the degree of Technologist in Systems Analysis and Development
@@ -24,7 +24,7 @@ With this system it has been found that the distribution of the cloud facilitate
 Key words: Parallel, Distributed Computing, Cloud, Development frameworks, Azure, Matrix LU Decomposition, Gpu, Math.
 
 
-## O Sistema
+## System description
 
 
 The overall objective of the system is to provide an interface for the user, which may submit data files containing a matrix to be decomposed into upper and lower triangular. 
@@ -36,7 +36,7 @@ The process will then use a processing application to the LU decomposition with 
 Once finished processing the nodes, the system returns the results to the system in the cloud.
 
 
-## Arquitetura
+## Architecture
 
 ![Arquitetura do Sistema][screen_architecture]
 
