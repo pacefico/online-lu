@@ -1,23 +1,12 @@
 # CLOUD-LU: PROGRAMAÇÃO PARALELA PARA GPU UTILIZANDO PLATAFORMAS DE DESENVOLVIMENTO EM SERVIÇOS DE NUVEM (AZURE)
-Paulo Figueiredo - Faculdade de Tecnologia - UNICAMP @2014
+Paulo Figueiredo - Faculty of Technology - State University of Campinas - UNICAMP @2014
 
-Trabalho de conclusão de curso submetido à Universidade Estadual de Campinas, como parte dos requisitos obrigatórios para obtenção do grau de Tecnólogo em Análise e Desenvolvimento de Sistemas
-O texto, os detalhes da implementação, do projeto e todas as referências utilizadas estão no [pdf aqui][tcc_pdf]
+Project and dissertation thesis submitted to the State University of Campinas, as part of the mandatory requirements for the degree of Technologist in Systems Analysis and Development
 
-## Resumo
+The thesis, details, code implementation, e all references can be found [here][tcc_pdf] only in Portuguese.
 
-Com o passar dos anos o poder de processamento dos computadores cresceu. No entanto, mesmo com a contínua produção de novos chips com maior poder de processamento, novas abordagens que utilizam o conceito do paralelismo têm sido propostas para reduzir o tempo de processamento. 
+For any question you may have, please contact me at pacefico@gmail.com
 
-Uma dessas propostas é a junção do conceito do paralelismo ao sistema de nuvens computacionais,visando permitir execução paralela com característica altamente distribuída. 
-
-Nesse sentido, neste trabalho, desenvolvemos um sistema CloudLU, capaz de integrar os conceitos de computação na nuvem com o de distribuição de dados para processamento paralelo em um ou vários nós computacionais que podem estar dispersos geograficamente. 
-
-Para demonstração de conceitos, o sistema CloudLU foi desenvolvido baseado na plataforma de desenvolvimento Microsoft .NET, através de uma aplicação para decomposição LU de matrizes em unidades de processamento gráfico (GPU) interligada a uma aplicação também baseada na mesma plataforma, para os serviços de nuvem Windows Azure. 
-
-Com este sistema, se verificou que a distribuição facilitada pela nuvem e o processamento via GPU permitiu ganhos de até 7 vezes em relação ao processamento sequencial local.
-
-
-Palavras-chave: Paralelismo, Computação Distribuída, Nuvem, Plataforma de desenvolvimento, Azure, Decomposição Matricial LU, Gpu, Matemática.
 
 ## Abstract
 
@@ -37,33 +26,42 @@ Key words: Parallel, Distributed Computing, Cloud, Development frameworks, Azure
 
 ## O Sistema
 
-O objetivo geral do sistema é disponibilizar uma interface para o usuário, o qual poderá submeter arquivos de dados contendo uma matriz a ser decomposta em triangular superior e inferior. Esse sistema, por meio da nuvem, distribuirá esses arquivos entre os nós de processamento. Os nós de processamento utilizarão um aplicativo de processamento para a decomposição LU utilizando GPU com o modelo de programação CUDA. Uma vez finalizado o processamento nos nós, o sistema retornará os resultados ao sistema na nuvem.
+
+The overall objective of the system is to provide an interface for the user, which may submit data files containing a matrix to be decomposed into upper and lower triangular. 
+
+This system, through the Azure cloud, distribute these files between processing nodes. 
+
+The process will then use a processing application to the LU decomposition with GPU with CUDA programming model. 
+
+Once finished processing the nodes, the system returns the results to the system in the cloud.
 
 
 ## Arquitetura
 
 ![Arquitetura do Sistema][screen_architecture]
 
-A Figura apresenta o fluxo demarcado na cor laranja representando o fluxo de solicitação de processamento, enquanto que o fluxo demarcado na cor verde, representa o fluxo de resultado deste processamento. para então detalhá-los a seguir. 
 
-O usuário acessa a função web (1), responsável pelo gerenciamento do sistema, 
+The Figure shows the flow marked in orange that represents the processing request flow, while the flow marked in green represents the results of this processing flow. and then detail them below.
 
-O usuário então, abre a página de nova execução, insere os parâmetros da execução, em seguida o sistema envia a informação para o banco de dados (2), armazenando os parâmetros da execução solicitada.
+The user accesses the web function (1), responsible for system management.
 
-A função web envia os dados ao recipiente de itens a processar, que armazenará os arquivos necessários a execução da decomposição LU.
+The user then opens the new run page, enter the parameters of the run, then the system sends the information to the database (2), storing the parameters of the requested execution.
 
-Fiinalizado a cópia dos arquivos (3) a função web envia uma mensagem para a fila de mensagens a processar (4), contendo os parâmetros da execução. 
+The web function sends the data to the container processing items, which will store the files necessary to run the LU decomposition.
 
-Um dos nós de processamento monitora a fila de mensagens a processar (5), e detectando a presença de alguma mensagem, visualiza seu conteúdo e inicia o processo de cópia dos arquivos do recipiente elencado em (3), para si (6), 
-Compõe-se novamente então, a matriz de elementos a serem processados na memória principal deste nó, executa-se posteriormente a cópia desta matriz da memória principal para a memória da GPU e dispara-se o processo de decomposição LU (7). 
+Fiinalizado copying files (3) the web function sends a message to the message queue to process (4), containing the execution parameters.
 
-Ao finalizar o processo de decomposição LU, o sistema gera então novos arquivos de resultado e os armazena no recipiente do serviços de dados de itens processados (8), 
+One of the processing nodes monitors the message queue to process (5), and detecting the presence of a message, view its contents and begins the process of copying the container file part listed in (3) for you (6)
 
-Ao finalizar, o sistema encaminha uma mensagem com os dados e resumo dos tempos desta execução para a fila de itens processados (9). 
+It recompose then the array elements to be processed in main memory of this node, subsequently copy of this matrix of main memory to GPU memory and starts the LU decomposition process (7).
 
-A função de trabalho por sua vez, monitorando a fila de itens processados, verifica a presença da mensagem,visualiza e processa seu conteúdo (10), enviando seus resultados para o banco de dados (11), 
+At the end of the LU decomposition process, the system generates new result files and stores them in the container of processed items data services (8).
 
-E então, estes resultados ficarão disponíveis para que o usuário tenha acesso ao histórico e ao arquivo de resultado final da decomposição LU (12).
+When finished, the system sends a message to the data and summarize the time of this execution and put it into the queue of processed items (9).
+
+The work function in turn, monitoring the queue of processed items, checks the presence of the message and processes its content view (10), sending the results to the database (11).
+
+And then, these results will be available for the user, who can access the history and the final result of the LU decomposition file (12).
 
 
 ## Copyright
