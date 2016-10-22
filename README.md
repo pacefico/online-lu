@@ -1,8 +1,10 @@
-# CLOUD-LU - PROGRAMAÇÃO PARALELA PARA GPU UTILIZANDO PLATAFORMAS DE DESENVOLVIMENTO EM SERVIÇOS DE NUVEM (AZURE)
+# CLOUD-LU: PROGRAMAÇÃO PARALELA PARA GPU UTILIZANDO PLATAFORMAS DE DESENVOLVIMENTO EM SERVIÇOS DE NUVEM (AZURE)
 Paulo Figueiredo - Faculdade de Tecnologia - UNICAMP @2014
 
 Trabalho de conclusão de curso submetido à Universidade Estadual de Campinas, como parte dos requisitos obrigatórios para obtenção do grau de Tecnólogo em Análise e Desenvolvimento de Sistemas
-O texto, os detalhes da implementação, do projeto e todas as referências utilizadas estão no pdf [aqui](/Project/tcc-paulo-final.pdf “Clique e Baixe o PDF”)
+O texto, os detalhes da implementação, do projeto e todas as referências utilizadas estão no [pdf aqui][tcc_pdf]
+
+
 
 ## Resumo
 Com o passar dos anos o poder de processamento dos computadores cresceu. No entanto, mesmo com a contínua produção de novos chips com maior poder de processamento, novas abordagens que utilizam o conceito do paralelismo têm sido propostas para reduzir o tempo de processamento. Uma dessas propostas é a junção do conceito do paralelismo ao sistema de nuvens computacionais,visando permitir execução paralela com característica altamente distribuída. Nesse sentido, neste trabalho, desenvolvemos um sistema CloudLU, capaz de integrar os conceitos de computação na nuvem com o de distribuição de dados para processamento paralelo em um ou vários nós computacionais que podem estar dispersos geograficamente. Para demonstração de conceitos, o sistema CloudLU foi desenvolvido baseado na plataforma de desenvolvimento Microsoft .NET, através de uma aplicação para decomposição LU de matrizes em unidades de processamento gráfico (GPU) interligada a uma aplicação também baseada na mesma plataforma, para os serviços de nuvem Windows Azure. Com este sistema, se verificou que a distribuição facilitada pela nuvem e o processamento via GPU permitiu ganhos de até 7 vezes em relação ao processamento sequencial local.
@@ -37,3 +39,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 [screen_architecture]: /Project/arquitetura.png "Arquitetura do Sistema"
+[tcc_pdf]: https://raw.githubusercontent.com/pacefico/online-lu/master/Project/tcc-paulo-final.pdf
