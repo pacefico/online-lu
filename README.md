@@ -41,25 +41,25 @@ Once finished processing the nodes, the system returns the results to the system
 ![Arquitetura do Sistema][screen_architecture]
 
 
-The Figure shows the flow marked in orange that represents the processing request flow, while the flow marked in green represents the results of this processing flow. and then detail them below.
+The Figure shows the flow marked in orange represents a processing request flow, while the flow marked in green represents results of this processing, and then there are details below.
 
-The user accesses the web function (1), responsible for system management.
+The user accesses web function (1), responsible for system management.
 
-The user then opens the new run page, enter the parameters of the run, then the system sends the information to the database (2), storing the parameters of the requested execution.
+The user opens a new run page, input run parameters, then the system sends the information to the database (2), storing the parameters of the requested execution.
 
 The web function sends the data to the container processing items, which will store the files necessary to run the LU decomposition.
 
-Fiinalizado copying files (3) the web function sends a message to the message queue to process (4), containing the execution parameters.
+Ending file copy (3) the web function sends a message to the message queue "to process" (4), with the execution parameters.
 
-One of the processing nodes monitors the message queue to process (5), and detecting the presence of a message, view its contents and begins the process of copying the container file part listed in (3) for you (6)
+One of the processing nodes monitors the message queue "to process" (5), and once detected the presence of a message, the node analyze its contents and begins the process by copying the container file part listed in (3) for (6)
 
-It recompose then the array elements to be processed in main memory of this node, subsequently copy of this matrix of main memory to GPU memory and starts the LU decomposition process (7).
+It recompose then the array elements to be processed in main memory of this node, subsequently copy a matrix from main memory to GPU memory and starts the LU decomposition process (7).
 
 At the end of the LU decomposition process, the system generates new result files and stores them in the container of processed items data services (8).
 
-When finished, the system sends a message to the data and summarize the time of this execution and put it into the queue of processed items (9).
+Once finished, the system sends a message to the data and summarize the time of this execution and put it into the queue of processed items (9).
 
-The work function in turn, monitoring the queue of processed items, checks the presence of the message and processes its content view (10), sending the results to the database (11).
+The work function in turn, monitoring the queue of processed items, checks the presence of a message and processes its content (10), sending after, the results to the database (11).
 
 And then, these results will be available for the user, who can access the history and the final result of the LU decomposition file (12).
 
